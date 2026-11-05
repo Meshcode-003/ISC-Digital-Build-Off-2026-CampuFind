@@ -10,3 +10,7 @@ CampusFind is a campus lost-and-found application.
 4. Include `config/database.php` from PHP code to create the PDO connection in `$pdo`.
 
 The `.env` file is local configuration and is excluded from Git. The SQL script is intended for an empty database and seeds the initial roles, categories, and system settings.
+
+## Authentication
+
+Open `http://localhost/campusfind/public/register.php` to create a student or staff account, then sign in at `http://localhost/campusfind/public/login.php`. Passwords are stored as hashes. After sign-in, the protected account page is available at `http://localhost/campusfind/public/dashboard.php`; sign out using its form.
