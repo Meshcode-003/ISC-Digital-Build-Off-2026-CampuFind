@@ -8,6 +8,7 @@ loadEnv(dirname(__DIR__) . '/.env');
 
 define('APP_NAME', getenv('APP_NAME') ?: 'CampusFind');
 define('BASE_URL', '/campusfind/public');
+define('SUPERADMIN_URL', '/campusfind/superadmin');
 
 $isHttps = (
     !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'
