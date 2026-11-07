@@ -1,0 +1,190 @@
+:root {
+    color-scheme: light;
+    --ink: #20352b;
+    --muted: #6f7d73;
+    --green: #2e694d;
+    --green-dark: #214e3a;
+    --paper: #f5f7f4;
+    font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--ink);
+    background:
+        radial-gradient(ellipse at 18% 0%, rgba(80, 139, 93, 0.1), transparent 38rem),
+        var(--paper);
+}
+
+.module-header {
+    min-height: 72px;
+    width: min(1120px, calc(100% - 48px));
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5eae3;
+}
+
+.brand {
+    color: var(--green-dark);
+    font-size: 1.12rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    text-decoration: none;
+}
+
+.account {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+.account form {
+    margin: 0;
+}
+
+.text-button {
+    padding: 0;
+    border: 0;
+    color: var(--green);
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.text-button:hover,
+.back-link:hover,
+.home-link:hover {
+    color: var(--green-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.module-main {
+    width: min(760px, calc(100% - 40px));
+    margin: 42px auto 72px;
+}
+
+.back-link,
+.home-link {
+    color: var(--green);
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.module-card {
+    margin-top: 20px;
+    padding: clamp(26px, 6vw, 48px);
+    border: 1px solid #e3e9e1;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 16px 40px rgba(53, 78, 60, 0.07);
+}
+
+.module-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 25px;
+    border-radius: 15px;
+}
+
+.module-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.notice-icon {
+    color: #a76e3b;
+    background: #fbf0e1;
+}
+
+.mentor-icon {
+    color: #65709b;
+    background: #eef0f8;
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    color: var(--green);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(2rem, 6vw, 3rem);
+    letter-spacing: -0.07em;
+    line-height: 1.12;
+}
+
+.intro {
+    margin: 13px 0 26px;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+.status-panel {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 17px;
+    border: 1px solid #e7ece5;
+    border-radius: 12px;
+    background: #f8faf7;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #d59b60;
+    box-shadow: 0 0 0 4px rgba(213, 155, 96, 0.15);
+}
+
+.status-panel strong {
+    color: #34493b;
+    font-size: 0.9rem;
+}
+
+.status-panel p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 0.84rem;
+    line-height: 1.65;
+}
+
+.home-link {
+    display: inline-block;
+    margin-top: 24px;
+}
+
+@media (max-width: 520px) {
+    .module-header {
+        width: calc(100% - 32px);
+    }
+
+    .account {
+        gap: 10px;
+        font-size: 0.75rem;
+    }
+
+    .module-main {
+        margin-top: 28px;
+    }
+}
