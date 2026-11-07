@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Load authentication, configuration and database connection.
-require_once dirname(__DIR__) . '/includes/auth.php';
+require_once dirname(__DIR__, 2) . '/includes/auth.php';
 
 requireAdmin();
 

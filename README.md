@@ -6,7 +6,7 @@ CampusFind is a unified campus platform bringing together three services:
 - **Campus Notices** — access clear, organized campus announcements.
 - **Find a Mentor** — discover mentors and build meaningful connections.
 
-The shared account foundation remains in the existing `users` and `roles` tables. The current Lost & Found service and authentication flow are preserved. The landing page is a static frontend-only service overview; its service cards are presentation only and are not connected to routes or APIs.
+The shared account foundation remains in the existing `users` and `roles` tables. Lost & Found, Campus Notices, and Mentorship remain separate services using the same account and database connection. Campus Notices and Mentorship currently have authenticated starter pages; their workflows are not implemented.
 
 ## Local setup with XAMPP
 
@@ -19,7 +19,7 @@ The `.env` file is local configuration and is excluded from Git. The SQL script 
 
 ## Authentication
 
-Open `http://localhost/campusfind/public/register.php` to create a student or staff account, then sign in at `http://localhost/campusfind/public/login.php`. Passwords are stored as hashes. After sign-in, the protected account page is available at `http://localhost/campusfind/public/dashboard.php`; sign out using its form.
+Open `http://localhost/campusfind/public/register.php` to create a student or staff account, then sign in at `http://localhost/campusfind/public/login.php`. Passwords are stored as hashes. Students and staff are sent to the protected account page at `http://localhost/campusfind/public/dashboard.php`; admin and super-admin accounts are sent to the protected Lost & Found console at `http://localhost/campusfind/lostandfound/admin/dashboard.php`. Sign out using the page’s form.
 
 ## Database additions
 
@@ -27,4 +27,8 @@ The approved additive migration [`database/migrations/001_add_notices_and_mentor
 
 ## Landing page
 
-Open `http://localhost/campusfind/` to view the responsive three-service landing page. It is static HTML/CSS and its service cards do not navigate to backend routes or call APIs. The Notices and Mentorship modules are not implemented here.
+Open `http://localhost/campusfind/` to view the responsive three-service landing page. Each card opens its own module: Lost & Found at `/campusfind/lostandfound/`, Campus Notices at `/campusfind/notices/`, and Mentorship at `/campusfind/mentorship/`. The Notices and Mentorship pages are authenticated starter skeletons. Lost & Found administration is in `/campusfind/lostandfound/admin/`.
+
+## Admin module
+
+The Lost & Found admin console uses the shared role check against the current `users` and `roles` records. It supports dashboard summaries, claim review, item management, and recovered-item handover using the existing `items` and `claims` schema. The admin pages do not rely on AI claim fields or an `under_review` status.

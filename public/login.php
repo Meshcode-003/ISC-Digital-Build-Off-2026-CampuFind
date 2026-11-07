@@ -6,7 +6,10 @@ require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
 
 if (isset($_SESSION['user_id'])) {
-    header('Location: ' . BASE_URL . '/dashboard.php');
+    $destination = in_array($_SESSION['role_name'] ?? '', ['admin', 'super_admin'], true)
+        ? '/campusfind/lostandfound/admin/dashboard.php'
+        : BASE_URL . '/dashboard.php';
+    header('Location: ' . $destination);
     exit;
 }
 
@@ -58,7 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = (string) $user['username'];
             unset($_SESSION['csrf_token']);
 
-            header('Location: ' . BASE_URL . '/dashboard.php');
+            $destination = in_array($user['role_name'], ['admin', 'super_admin'], true)
+                ? '/campusfind/lostandfound/admin/dashboard.php'
+                : BASE_URL . '/dashboard.php';
+            header('Location: ' . $destination);
             exit;
         }
     }

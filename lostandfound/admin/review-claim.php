@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Load configuration, session, authentication and database connection.
-require_once dirname(__DIR__) . '/includes/auth.php';
+require_once dirname(__DIR__, 2) . '/includes/auth.php';
 requireAdmin();
 
 function e($value): string
@@ -46,16 +46,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } else {
 
-        $newStatus = $_POST['status'] ?? '';
-        $notesInput = $_POST['admin_notes'] ?? '';
-        $adminNotes = is_string($notesInput)
-            ? trim($notesInput)
+        $newStatusInput = $_POST['status'] ?? '';
+        $newStatus = is_string($newStatusInput) ? $newStatusInput : '';
+        $reasonInput = $_POST['rejection_reason'] ?? '';
+        $rejectionReason = is_string($reasonInput)
+            ? trim($reasonInput)
             : '';
 
         $allowedDecisions = [
             'approved',
-            'rejected',
-            'under_review'
+            'rejected'
         ];
 
         if (!in_array($newStatus, $allowedDecisions, true)) {
@@ -63,15 +63,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Invalid decision selected.';
 
         } elseif (
-            in_array($newStatus, ['rejected', 'under_review'], true)
-            && $adminNotes === ''
+            $newStatus === 'rejected'
+            && $rejectionReason === ''
         ) {
 
-            $error = 'Please provide an explanation for this decision.';
+            $error = 'Please provide a reason for rejecting this claim.';
 
-        } elseif (strlen($adminNotes) > 5000) {
+        } elseif (strlen($rejectionReason) > 5000) {
 
-            $error = 'Administrative notes cannot exceed 5000 characters.';
+            $error = 'The rejection reason cannot exceed 5000 characters.';
 
         } else {
 
@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare(
                     "UPDATE claims
                      SET status = ?,
-                         admin_notes = ?,
+                         rejection_reason = ?,
                          reviewed_by = ?,
                          reviewed_at = NOW()
                      WHERE id = ?"
@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt->execute([
                     $newStatus,
-                    $adminNotes !== '' ? $adminNotes : null,
+                    $newStatus === 'rejected' ? $rejectionReason : null,
                     (int)$_SESSION['user_id'],
                     $claim_id
                 ]);
@@ -372,11 +372,6 @@ body {
 .rejected {
     background: #ffe0e0;
     color: #a52020;
-}
-
-.under_review {
-    background: #e0eaff;
-    color: #2452a0;
 }
 
 textarea {
@@ -649,44 +644,6 @@ textarea {
 </section>
 
 
-<!-- AI ANALYSIS -->
-
-<section class="panel">
-
-    <h2>Smart Match Assistant Analysis</h2>
-
-    <div class="ai-score">
-
-        <?php
-
-        echo $claim['ai_score'] !== null
-            ? e($claim['ai_score']) . '%'
-            : 'N/A';
-
-        ?>
-
-    </div>
-
-    <p>
-        <strong>AI Recommendation:</strong>
-
-        <?php echo e($claim['ai_recommendation'] ?? 'Not analyzed'); ?>
-
-    </p>
-
-    <div class="ai-explanation">
-
-        <strong>AI Explanation</strong>
-
-        <p>
-            <?php echo e($claim['ai_explanation'] ?? 'No explanation available.'); ?>
-        </p>
-
-    </div>
-
-</section>
-
-
 <!-- ADMIN DECISION -->
 
 <section class="panel">
@@ -722,20 +679,19 @@ textarea {
             value="<?php echo e($_SESSION['csrf_token']); ?>"
         >
 
-        <label for="admin_notes">
-
-            <strong>Private Administrative Notes</strong>
+        <label for="rejection_reason">
+            <strong>Rejection Reason</strong>
 
         </label>
 
         <br><br>
 
         <textarea
-            name="admin_notes"
-            id="admin_notes"
+            name="rejection_reason"
+            id="rejection_reason"
             maxlength="5000"
-            placeholder="Explain your decision or record additional observations..."
-        ><?php echo e($claim['admin_notes']); ?></textarea>
+            placeholder="Required when rejecting a claim."
+        ><?php echo e($claim['rejection_reason']); ?></textarea>
 
 
         <div class="decision-buttons">
@@ -750,15 +706,6 @@ textarea {
                 Approve Claim
             </button>
 
-
-            <button
-                type="submit"
-                name="status"
-                value="under_review"
-                class="review"
-            >
-                Under Review
-            </button>
 
 
             <button
