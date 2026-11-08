@@ -23,7 +23,38 @@ Open `http://localhost/campusfind/public/register.php` to create a student or st
 
 ## Database additions
 
-The approved additive migration [`database/migrations/001_add_notices_and_mentorship.sql`](database/migrations/001_add_notices_and_mentorship.sql) adds the Campus Notices and Mentorship tables without altering existing tables or records. Back up the database, then apply this migration once to the existing `campusfind` database. It reuses `users` and does not create another authentication or notification system. The live schema uses the singular `notification` and `activity` tables; no `notifications` or `activity_logs` tables exist.
+The additive migrations in [`database/migrations/`](database/migrations/) preserve existing tables and records:
+
+1. [`001_add_notices_and_mentorship.sql`](database/migrations/001_add_notices_and_mentorship.sql) adds the Campus Notices tables and the core mentor profile, expertise, and request tables.
+2. [`002_mentorship_workflows.sql`](database/migrations/002_mentorship_workflows.sql) adds mentor applications and application expertise, WhatsApp contact preferences, conversations, messages, and sessions. It also creates a conversation for any already-accepted mentorship request.
+3. [`003_module_admin_assignments.sql`](database/migrations/003_module_admin_assignments.sql) stores administrator-to-module assignments for Lost Items, Notices, and Mentorship.
+
+Back up the database, then apply unapplied migrations in order to the existing `campusfind` database. Migrations 001 and 002 have already been applied in the current XAMPP environment; migration 003 is applied as part of this deployment. These migrations reuse `users` and do not create another authentication or notification system. The application uses the existing singular `notification` table for user alerts.
+
+## Super Admin: administrator registration
+
+The Super Admin can register an administrator at `/campusfind/superadmin/admins/create.php`. The form creates an account using the existing `users` table and password hash, records one or more module assignments in `module_admin_assignments`, and writes an `ADMIN_CREATED` entry to the existing `activity` table in the same transaction. Super Admins are sent to this page after login.
+
+The live database initially had no Super Admin account. To bootstrap the first one, open PowerShell in the CampusFind installation and set a process-only password before running the CLI script. Enter the name and account details at the prompts; the password is not echoed or stored in the script:
+
+```powershell
+$env:CAMPUSFIND_SUPERADMIN_PASSWORD = Read-Host "Initial Super Admin password" -AsSecureString | `
+    ForEach-Object { [System.Net.NetworkCredential]::new("", $_).Password }
+C:\xampp\php\php.exe C:\xampp\htdocs\campusfind\database\create_superadmin.php
+Remove-Item Env:CAMPUSFIND_SUPERADMIN_PASSWORD
+```
+
+The bootstrap script is CLI-only and refuses to create a second Super Admin. Module assignment storage is implemented in this slice; enforcement of those assignments across every module-admin route is a subsequent phase. Until that authorization work is complete, do not treat assignments as effective access restrictions or provision module administrators for production access.
+
+## Mentorship workflows
+
+- Signed-in student and staff accounts can browse active mentors, search by name or expertise, and send a request. A mentor application must be approved by an admin or super admin before the profile becomes discoverable.
+- Applicants submit a headline, biography, qualifications, experience, and expertise. Admins review applications at `/campusfind/mentorship/admin/applications.php`; an approval creates the mentor profile and copies its expertise in one database transaction. A rejection includes feedback and sends an in-app notification.
+- Mentors manage their profile, availability, discovery visibility, and WhatsApp opt-in at `/campusfind/mentorship/profile.php`. WhatsApp contact is shown only when the mentor explicitly opts in and has a valid number on their shared account; the number itself is not displayed on the profile.
+- Both sides can track requests at `/campusfind/mentorship/requests.php`. Mentors can accept or decline pending requests, students can cancel pending requests, and either participant can mark an accepted connection complete.
+- A conversation is created when a request is accepted. Only the two participants in an accepted or completed connection can read or send messages. The page refreshes new messages periodically.
+- Participants in an accepted connection can schedule, complete, or cancel sessions at `/campusfind/mentorship/sessions.php?id=<request-id>`. Online links must use HTTPS. Times are interpreted in the CampusFind server's local timezone.
+- Mutating forms use the existing session authentication and CSRF protection. User content is validated and escaped; request and conversation access is checked against the signed-in user on every route.
 
 ## Landing page
 

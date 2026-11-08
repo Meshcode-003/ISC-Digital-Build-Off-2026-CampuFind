@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // Load authentication, session and database connection
-require_once dirname(__DIR__) . '/includes/auth.php';
+require_once dirname(__DIR__, 2) . '/includes/auth.php';
 
 // Only admins and super admins can manage claims
 requireAdmin();
@@ -19,9 +19,9 @@ $status = is_string($statusInput) ? $statusInput : '';
 
 $allowedStatuses = [
     'pending',
-    'under_review',
     'approved',
-    'rejected'
+    'rejected',
+    'cancelled'
 ];
 
 // =====================================
@@ -238,7 +238,7 @@ th {
     color: #a52020;
 }
 
-.under_review {
+.cancelled {
     background: #e0eaff;
     color: #2452a0;
 }
@@ -310,11 +310,6 @@ th {
                 Pending
             </option>
 
-            <option value="under_review"
-                <?php echo $status === 'under_review' ? 'selected' : ''; ?>>
-                Under Review
-            </option>
-
             <option value="approved"
                 <?php echo $status === 'approved' ? 'selected' : ''; ?>>
                 Approved
@@ -325,6 +320,10 @@ th {
                 Rejected
             </option>
 
+            <option value="cancelled"
+                <?php echo $status === 'cancelled' ? 'selected' : ''; ?>>
+                Cancelled
+            </option>
         </select>
 
         <button type="submit">
@@ -348,8 +347,6 @@ th {
                     <th>Claimant</th>
                     <th>Phone</th>
                     <th>Lost Item</th>
-                    <th>AI Score</th>
-                    <th>Recommendation</th>
                     <th>Status</th>
                     <th>Submitted</th>
                     <th>Action</th>
@@ -375,16 +372,6 @@ th {
 
                         <td>
                             <?php echo e($claim['item_name']); ?>
-                        </td>
-
-                        <td>
-                            <?php echo $claim['ai_score'] !== null
-                                ? e($claim['ai_score']) . '%'
-                                : 'N/A'; ?>
-                        </td>
-
-                        <td>
-                            <?php echo e($claim['ai_recommendation'] ?? 'Not analyzed'); ?>
                         </td>
 
                         <td>
@@ -421,7 +408,7 @@ th {
             <?php else: ?>
 
                 <tr>
-                    <td colspan="8" class="empty">
+                    <td colspan="6" class="empty">
                         No claims found.
                     </td>
                 </tr>

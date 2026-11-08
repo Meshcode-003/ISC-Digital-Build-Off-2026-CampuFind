@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__) . '/includes/auth.php';
+require_once dirname(__DIR__, 2) . '/includes/auth.php';
 requireAdmin();
 
 // Create CSRF token.
@@ -19,9 +19,12 @@ function clean($value): string
 }
 
 // Search and filters.
-$search = trim($_GET['search'] ?? '');
-$status = $_GET['status'] ?? '';
-$itemType = $_GET['item_type'] ?? '';
+$searchInput = $_GET['search'] ?? '';
+$statusInput = $_GET['status'] ?? '';
+$itemTypeInput = $_GET['item_type'] ?? '';
+$search = is_string($searchInput) ? trim($searchInput) : '';
+$status = is_string($statusInput) ? $statusInput : '';
+$itemType = is_string($itemTypeInput) ? $itemTypeInput : '';
 
 $allowedStatuses = [
     'pending',

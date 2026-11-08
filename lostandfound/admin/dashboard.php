@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 // Protect this page: only admins and super admins
-require_once dirname(__DIR__) . '/includes/auth.php';
+require_once dirname(__DIR__, 2) . '/includes/auth.php';
 
 requireAdmin();
 
@@ -37,28 +37,9 @@ $rejectedClaims = $pdo->query(
     "SELECT COUNT(*) FROM claims WHERE status = 'rejected'"
 )->fetchColumn();
 
-// Count claims under review
-$underReview = $pdo->query(
-    "SELECT COUNT(*) FROM claims WHERE status = 'under_review'"
-)->fetchColumn();
-
-// =====================================
-// AI RECOMMENDATION STATISTICS
-// =====================================
-
-$strongMatches = $pdo->query(
-    "SELECT COUNT(*) FROM claims
-     WHERE ai_recommendation = 'strong_match'"
-)->fetchColumn();
-
-$possibleMatches = $pdo->query(
-    "SELECT COUNT(*) FROM claims
-     WHERE ai_recommendation = 'possible_match'"
-)->fetchColumn();
-
-$weakMatches = $pdo->query(
-    "SELECT COUNT(*) FROM claims
-     WHERE ai_recommendation = 'weak_match'"
+// Count cancelled claims
+$cancelledClaims = $pdo->query(
+    "SELECT COUNT(*) FROM claims WHERE status = 'cancelled'"
 )->fetchColumn();
 
 // =====================================
@@ -317,7 +298,7 @@ th {
     color: #a52020;
 }
 
-.under_review {
+.cancelled {
     background: #e0eaff;
     color: #2452a0;
 }
@@ -424,10 +405,6 @@ th {
             Manage Lost Items
         </a>
 
-        <a href="reports.php">
-            Reports & Analytics
-        </a>
-
     </nav>
 
     <h4>Public Website</h4>
@@ -435,11 +412,11 @@ th {
     <nav>
 
         <a href="../index.php">
-            Visit Homepage
+            Lost &amp; Found Module
         </a>
 
-        <a href="../lost-items.php">
-            Lost Items Gallery
+        <a href="<?= BASE_URL ?>/dashboard.php">
+            My Account
         </a>
 
     </nav>
@@ -548,53 +525,14 @@ th {
 
     <div class="stat-card">
 
-        <p>Under Review</p>
+        <p>Cancelled Claims</p>
 
-        <h2><?php echo e($underReview); ?></h2>
+        <h2><?php echo e($cancelledClaims); ?></h2>
 
     </div>
 
 
 </div>
-
-
-<!-- AI ANALYTICS -->
-
-<section class="analytics">
-
-    <h2>Smart Match Assistant Analytics</h2>
-
-    <div class="match-grid">
-
-        <div class="match-box">
-
-            <h3><?php echo e($strongMatches); ?></h3>
-
-            <p>Strong Matches</p>
-
-        </div>
-
-
-        <div class="match-box">
-
-            <h3><?php echo e($possibleMatches); ?></h3>
-
-            <p>Possible Matches</p>
-
-        </div>
-
-
-        <div class="match-box">
-
-            <h3><?php echo e($weakMatches); ?></h3>
-
-            <p>Weak Matches</p>
-
-        </div>
-
-    </div>
-
-</section>
 
 
 <!-- RECENT CLAIMS -->
@@ -612,10 +550,6 @@ th {
                 <th>Claimant</th>
 
                 <th>Lost Item</th>
-
-                <th>AI Score</th>
-
-                <th>AI Recommendation</th>
 
                 <th>Status</th>
 
@@ -642,16 +576,6 @@ th {
                         <?php echo e($claim['item_name']); ?>
                     </td>
 
-                    <td class="match-score">
-
-                        <?php echo e($claim['ai_score'] ?? 'N/A'); ?>%
-
-                    </td>
-
-                    <td>
-                        <?php echo e($claim['ai_recommendation'] ?? 'Not analyzed'); ?>
-                    </td>
-
                     <td>
 
                         <span class="status <?php echo e($claim['status']); ?>">
@@ -674,7 +598,7 @@ th {
 
             <tr>
 
-                <td colspan="6" class="empty">
+                <td colspan="4" class="empty">
 
                     No claims have been submitted yet.
 
