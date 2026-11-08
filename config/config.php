@@ -7,8 +7,8 @@ require_once __DIR__ . '/env.php';
 loadEnv(dirname(__DIR__) . '/.env');
 
 define('APP_NAME', getenv('APP_NAME') ?: 'CampusFind');
-define('BASE_URL', '/campusfind/public');
-define('SUPERADMIN_URL', '/campusfind/superadmin');
+define('BASE_URL', '/ISC-Digital-Build-Off-2026-CampuFind/public');
+define('SUPERADMIN_URL', '/ISC-Digital-Build-Off-2026-CampuFind/superadmin');
 
 $isHttps = (
     !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'
