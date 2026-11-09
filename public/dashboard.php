@@ -344,7 +344,6 @@ $services = [
 
 <body>
 
-    <!-- Navigation -->
     <header class="navbar">
 
         <div class="brand">
