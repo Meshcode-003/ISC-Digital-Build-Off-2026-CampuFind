@@ -117,6 +117,7 @@ $items = $stmt->fetchAll();
     <div class="logo">Lost & Found</div>
 
     <nav>
+        <a href="../public/dashboard.php">Go to my CampusFind account</a>
         <a href="index.php">Home</a>
         <a href="report-item.php">Report Item</a>
         <a href="lost-items.php">Lost Items</a>

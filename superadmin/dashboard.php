@@ -619,7 +619,7 @@ $hasPendingApprovals = $counts['pending_items'] + $counts['pending_reports'] + $
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Super Admin Control Centre | <?= $escape(APP_NAME) ?></title>
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="<?= $escape(SUPERADMIN_URL . '/dashboard.css?v=' . filemtime(__DIR__ . '/dashboard.css')) ?>">
 </head>
 <body>
 <div class="app-shell">
