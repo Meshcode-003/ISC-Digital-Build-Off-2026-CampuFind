@@ -120,6 +120,9 @@ $items = $stmt->fetchAll();
         <a href="index.php">Home</a>
         <a href="report-item.php">Report Item</a>
         <a href="lost-items.php">Lost Items</a>
+        <?php if (in_array($_SESSION['role_name'] ?? '', ['student', 'staff'], true)): ?>
+            <a href="claimant/my-claims.php">My Claims</a>
+        <?php endif; ?>
     </nav>
 
 </header>

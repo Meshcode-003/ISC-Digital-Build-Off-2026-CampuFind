@@ -210,6 +210,35 @@ button, .button {
     background: #15803d;
 }
 
+.approve-btn {
+    background: #15803d;
+}
+
+.reject-btn {
+    background: #dc2626;
+}
+
+.review-note {
+    margin-bottom: 18px;
+    padding: 13px 16px;
+    border-radius: 7px;
+}
+
+.review-success {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.review-error {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+.rejection-reason {
+    width: 190px;
+    max-width: 100%;
+}
+
 .table-container {
     overflow-x: auto;
     background: white;
@@ -317,6 +346,15 @@ th {
         </strong>
 
     </div>
+
+    <?php if (isset($_GET['message']) && $_GET['message'] === 'item_approved'): ?>
+        <p class="review-note review-success" role="status">Lost-item report approved and reporter notified.</p>
+    <?php elseif (isset($_GET['message']) && $_GET['message'] === 'item_rejected'): ?>
+        <p class="review-note review-success" role="status">Lost-item report rejected and reporter notified.</p>
+    <?php endif; ?>
+    <?php if (isset($_GET['error']) && is_string($_GET['error'])): ?>
+        <p class="review-note review-error" role="alert"><?= clean($_GET['error']) ?></p>
+    <?php endif; ?>
 
     <form method="GET" class="filters">
 
@@ -447,6 +485,43 @@ th {
                                 >
                                     Edit
                                 </a>
+
+                                <?php if ($item['item_type'] === 'lost' && $item['status'] === 'pending'): ?>
+
+                                    <form
+                                        method="POST"
+                                        action="review-item.php"
+                                        class="inline-form"
+                                        onsubmit="return confirm('Approve this lost-item report so it becomes visible to students and staff?');"
+                                    >
+                                        <input type="hidden" name="csrf_token" value="<?= clean($_SESSION['csrf_token']) ?>">
+                                        <input type="hidden" name="item_id" value="<?= (int) $item['id'] ?>">
+                                        <input type="hidden" name="decision" value="approved">
+                                        <button type="submit" class="approve-btn">Approve Report</button>
+                                    </form>
+
+                                    <form
+                                        method="POST"
+                                        action="review-item.php"
+                                        class="inline-form"
+                                        onsubmit="return confirm('Reject this lost-item report?');"
+                                    >
+                                        <input type="hidden" name="csrf_token" value="<?= clean($_SESSION['csrf_token']) ?>">
+                                        <input type="hidden" name="item_id" value="<?= (int) $item['id'] ?>">
+                                        <input type="hidden" name="decision" value="rejected">
+                                        <input
+                                            class="rejection-reason"
+                                            type="text"
+                                            name="rejection_reason"
+                                            maxlength="5000"
+                                            placeholder="Reason required"
+                                            aria-label="Reason for rejecting this report"
+                                            required
+                                        >
+                                        <button type="submit" class="reject-btn">Reject Report</button>
+                                    </form>
+
+                                <?php endif; ?>
 
                                 <?php if ($item['status'] !== 'recovered'): ?>
 

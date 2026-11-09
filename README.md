@@ -21,6 +21,12 @@ The `.env` file is local configuration and is excluded from Git. The SQL script 
 
 Open `http://localhost/campusfind/public/register.php` to create a student or staff account, then sign in at `http://localhost/campusfind/public/login.php`. Passwords are stored as hashes. After sign-in, the protected account page is available at `http://localhost/campusfind/public/dashboard.php`; sign out using its form.
 
+## Lost & Found workflow
+
+Signed-in students and staff can open `/campusfind/lostandfound/`, submit a lost-item report, and browse approved lost-item reports. New reports remain pending until an administrator reviews them in Lost & Found > Manage Lost Items. Approval makes a report visible in the gallery; rejection requires a reason and notifies the reporter.
+
+A student or staff member can claim an approved lost item other than their own report. Claims are stored against the shared `users` account and item in `claims`, and only one pending or approved claim per user/item is allowed. Administrators review claims in Manage Claims; the claimant can track status and feedback in My Claims. After approving one claim, an administrator confirms the physical handover to mark the item recovered.
+
 ## Database additions
 
 The additive migrations in [`database/migrations/`](database/migrations/) preserve existing tables and records:

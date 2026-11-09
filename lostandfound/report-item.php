@@ -47,7 +47,7 @@ $escape = static fn ($value): string => htmlspecialchars(
 
     <nav>
         <a href="index.php">Home</a>
-        <a href="report-item.php">Report Item</a>
+        <a href="report-item.php">Report Lost Item</a>
         <a href="lost-items.php">Lost Items</a>
     </nav>
 
@@ -60,7 +60,7 @@ $escape = static fn ($value): string => htmlspecialchars(
         <h1>Report a Lost Item</h1>
 
         <p>
-            Provide details about The item you have found.
+            Share details about the item you have lost. An administrator will review your report before it appears in the gallery.
         </p>
 
     </div>
@@ -141,7 +141,7 @@ $escape = static fn ($value): string => htmlspecialchars(
 
         <div class="form-group">
 
-            <label>Date Found</label>
+            <label>Date Lost</label>
 
             <input
                 type="date"

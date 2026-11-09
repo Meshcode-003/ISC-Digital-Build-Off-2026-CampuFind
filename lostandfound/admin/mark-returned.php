@@ -50,7 +50,7 @@ try {
 
     // Find and lock the item.
     $itemStmt = $pdo->prepare("
-        SELECT id, status
+        SELECT id, item_type, status
         FROM items
         WHERE id = ?
         FOR UPDATE
@@ -62,6 +62,12 @@ try {
 
     if (!$item) {
         throw new RuntimeException('Item not found.');
+    }
+
+    if ($item['item_type'] !== 'lost' || $item['status'] !== 'approved') {
+        throw new RuntimeException(
+            'Only an approved lost item can be marked as recovered.'
+        );
     }
 
     // Prevent duplicate recovery.

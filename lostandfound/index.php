@@ -47,14 +47,27 @@ $isAdmin = in_array($_SESSION['role_name'] ?? '', ['admin', 'super_admin'], true
                 <span class="status-dot"></span>
                 <div>
                     <strong>Lost &amp; Found service</strong>
-                    <p>The Lost &amp; Found administration pages are organized in this module and share the CampusFind database and account session.</p>
+                    <p>Report a missing item, browse approved reports, and submit an ownership claim if you recognize something.</p>
                 </div>
             </div>
+            <?php if (isset($_GET['report']) && $_GET['report'] === 'submitted'): ?>
+                <div class="status-panel" role="status">
+                    <span class="status-dot"></span>
+                    <div>
+                        <strong>Your report was submitted</strong>
+                        <p>It will appear in the Lost Items list after an administrator approves it.</p>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <p><a class="home-link" href="report-item.php">Report a lost item</a></p>
+            <p><a class="home-link" href="lost-items.php">Browse approved lost items</a></p>
+            <?php if (in_array($_SESSION['role_name'] ?? '', ['student', 'staff'], true)): ?>
+                <p><a class="home-link" href="claimant/my-claims.php">View my claims</a></p>
+            <?php endif; ?>
             <?php if ($isAdmin): ?>
                 <a class="home-link" href="admin/dashboard.php">Open Lost &amp; Found administration</a>
-            <?php else: ?>
-                <a class="home-link" href="../public/dashboard.php">Go to my CampusFind account</a>
             <?php endif; ?>
+            <p><a href="../public/dashboard.php">Go to my CampusFind account</a></p>
         </section>
     </main>
 </body>
