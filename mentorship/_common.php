@@ -96,6 +96,7 @@ function mentorshipNormalizePhone(?string $phone): ?string
 
 function mentorshipPageStart(string $title): void
 {
+    global $pdo;
     global $mentorshipUser;
     global $mentorshipModulePath;
     $displayName = trim($mentorshipUser['first_name'] . ' ' . $mentorshipUser['last_name']);

@@ -233,6 +233,7 @@ There are no Composer or npm packages to install. If the project directory is no
 
 - **Database connection error:** Confirm MySQL is running and `.env` values match the database name, host, port, username, and password.
 - **Missing tables or columns:** Confirm the base schema was imported first, followed by every required migration in order. Do not reapply migrations to an already migrated database.
+- **`Unknown column 'notification_url'`:** Apply [`007_centralized_notifications.sql`](database/migrations/007_centralized_notifications.sql) once to the configured `campusfind` database. It adds the notification destination and deduplication fields while preserving existing notifications.
 - **Page links point to the wrong path:** The app expects `/campusfind`; update `APP_BASE_PATH` if the installation URL differs.
 - **Camera does not open:** Allow camera access in the browser and use `localhost` or HTTPS.
 - **Item photo cannot be saved:** Ensure Apache can write to `lostandfound/uploads/items/`.
