@@ -253,10 +253,9 @@ The following are improvements, not claims about current functionality:
 
 | Name | Role |
 |---|---|
-| Tumaini Kiplimo | Team Leader |
-| Meshack Oduor | Team Member |
-| Cyprian Kipchirchir | Team Member |
-| Donovan Yegon | Team Member |
+| Meshack Oduor | Team Leader |
+| Tumaini Kiplimo | Team Member |
+
 
 **Repository:** [Meshcode-003/ISC-Digital-Build-Off-2026-CampuFind](https://github.com/Meshcode-003/ISC-Digital-Build-Off-2026-CampuFind)
 
