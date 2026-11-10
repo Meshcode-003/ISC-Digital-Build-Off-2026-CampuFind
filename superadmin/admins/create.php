@@ -232,7 +232,7 @@ $displayName = trim(
 </head>
 <body>
     <header class="superadmin-header">
-        <a class="brand" href="/campusfind/index.html">CampusFind</a>
+        <a class="brand" href="<?= $escape(APP_BASE_PATH) ?>/index.html">CampusFind</a>
         <div class="header-actions">
             <span><?= $escape($displayName !== '' ? $displayName : 'Super Admin') ?></span>
             <form method="post" action="<?= $escape(BASE_URL) ?>/logout.php">

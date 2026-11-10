@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Lock the selected claim.
                 $stmt = $pdo->prepare(
-                    "SELECT id, item_id
+                    "SELECT id, item_id, claimant_id, status
                      FROM claims
                      WHERE id = ?
                      FOR UPDATE"
@@ -94,9 +94,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new RuntimeException('Claim not found.');
                 }
 
+                if ($selectedClaim['status'] !== 'pending') {
+                    throw new RuntimeException('Only pending claims can be reviewed.');
+                }
+
                 // Lock the corresponding CampusFind item.
                 $stmt = $pdo->prepare(
-                    "SELECT id, status
+                    "SELECT id, item_name, item_type, status
                      FROM items
                      WHERE id = ?
                      FOR UPDATE"
@@ -111,13 +115,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     );
                 }
 
-                // Do not approve an item already marked as recovered.
                 if (
-                    $newStatus === 'approved' &&
-                    $selectedItem['status'] === 'recovered'
+                    $selectedItem['item_type'] !== 'lost'
+                    || $selectedItem['status'] !== 'approved'
                 ) {
                     throw new RuntimeException(
-                        'This item has already been marked as recovered.'
+                        'Claims can only be reviewed for approved lost-item reports.'
                     );
                 }
 
@@ -159,6 +162,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $newStatus === 'rejected' ? $rejectionReason : null,
                     (int)$_SESSION['user_id'],
                     $claim_id
+                ]);
+
+                $notification = $pdo->prepare(
+                    'INSERT INTO notification (
+                        user_id, title, message, notification_type,
+                        related_item_id, related_claim_id
+                     ) VALUES (
+                        :user_id, :title, :message, :notification_type,
+                        :item_id, :claim_id
+                     )'
+                );
+                $notification->execute([
+                    'user_id' => (int) $selectedClaim['claimant_id'],
+                    'title' => $newStatus === 'approved' ? 'Ownership claim approved' : 'Ownership claim not approved',
+                    'message' => $newStatus === 'approved'
+                        ? 'Your claim for "' . $selectedItem['item_name'] . '" was approved. Contact the Lost & Found administrator to arrange collection.'
+                        : 'Your claim for "' . $selectedItem['item_name'] . '" was not approved. Reason: ' . $rejectionReason,
+                    'notification_type' => $newStatus === 'approved' ? 'approval' : 'rejection',
+                    'item_id' => (int) $selectedClaim['item_id'],
+                    'claim_id' => $claim_id,
                 ]);
 
                 $pdo->commit();
@@ -665,6 +688,7 @@ textarea {
 
     <br>
 
+    <?php if ($claim['status'] === 'pending'): ?>
     <form method="POST">
 
         <input
@@ -721,6 +745,12 @@ textarea {
         </div>
 
     </form>
+    <?php else: ?>
+        <p>This claim has already been reviewed and cannot be changed.</p>
+        <?php if (!empty($claim['rejection_reason'])): ?>
+            <p><strong>Rejection reason:</strong> <?php echo nl2br(e($claim['rejection_reason'])); ?></p>
+        <?php endif; ?>
+    <?php endif; ?>
 
 </section>
 
