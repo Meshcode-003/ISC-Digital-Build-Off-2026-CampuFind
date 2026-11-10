@@ -12,17 +12,17 @@ $moduleOptions = [
     'lost_items' => [
         'label' => 'Lost Items Administration',
         'description' => 'Manage Lost & Found items, reports, and claims.',
-        'url' => '/campusfind/lostandfound/admin/dashboard.php',
+        'url' => APP_BASE_PATH . '/lostandfound/admin/dashboard.php',
     ],
     'notices' => [
         'label' => 'Campus Notices',
         'description' => 'Open the Campus Notices module.',
-        'url' => '/campusfind/notices/',
+        'url' => APP_BASE_PATH . '/notices/',
     ],
     'mentorship' => [
         'label' => 'Mentorship Administration',
         'description' => 'Review mentor applications and manage mentorship.',
-        'url' => '/campusfind/mentorship/admin/applications.php',
+        'url' => APP_BASE_PATH . '/mentorship/admin/applications.php',
     ],
 ];
 

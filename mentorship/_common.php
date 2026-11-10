@@ -26,7 +26,7 @@ if (!$mentorshipUser) {
     exit('Your account is not active.');
 }
 
-$mentorshipModulePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/campusfind/mentorship/index.php')), '/');
+$mentorshipModulePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? APP_BASE_PATH . '/mentorship/index.php')), '/');
 if (basename($mentorshipModulePath) === 'admin') {
     $mentorshipModulePath = dirname($mentorshipModulePath);
 }

@@ -3,49 +3,14 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/config/config.php';
+require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
-
-function campusFindAdminDestination(PDO $pdo, int $userId): string
-{
-    $statement = $pdo->prepare(
-        'SELECT module_key
-         FROM module_admin_assignments
-         WHERE user_id = :user_id
-         ORDER BY module_key'
-    );
-    $statement->execute(['user_id' => $userId]);
-    $modules = $statement->fetchAll(PDO::FETCH_COLUMN);
-
-    $destinations = [
-        'lost_items' => '/campusfind/lostandfound/admin/dashboard.php',
-        'notices' => '/campusfind/notices/',
-        'mentorship' => '/campusfind/mentorship/admin/applications.php',
-    ];
-
-    if (count($modules) === 1 && isset($destinations[$modules[0]])) {
-        return $destinations[$modules[0]];
-    }
-
-    return BASE_URL . '/admin-modules.php';
-}
-
-function campusFindLoginDestination(PDO $pdo, int $userId, string $roleName, bool $afterLogin): string
-{
-    if ($roleName === 'super_admin') {
-        return SUPERADMIN_URL . '/admins/create.php';
-    }
-    if ($roleName === 'admin') {
-        return campusFindAdminDestination($pdo, $userId);
-    }
-
-    return $afterLogin ? '/campusfind/index.html' : BASE_URL . '/dashboard.php';
-}
 
 if (isset($_SESSION['user_id'])) {
     $sessionUserId = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
     if ($sessionUserId !== false && $sessionUserId > 0) {
         $sessionUserStatement = $pdo->prepare(
-            'SELECT r.role_name
+            'SELECT u.role_id, r.role_name
              FROM users u
              INNER JOIN roles r ON r.id = u.role_id
              WHERE u.id = :user_id
@@ -53,17 +18,12 @@ if (isset($_SESSION['user_id'])) {
              LIMIT 1'
         );
         $sessionUserStatement->execute(['user_id' => $sessionUserId]);
-        $sessionRole = $sessionUserStatement->fetchColumn();
+        $sessionUser = $sessionUserStatement->fetch();
 
-        if (is_string($sessionRole)) {
-            $_SESSION['role_name'] = $sessionRole;
-            header('Location: ' . campusFindLoginDestination(
-                $pdo,
-                $sessionUserId,
-                $sessionRole,
-                false
-            ));
-            exit;
+        if ($sessionUser && is_string($sessionUser['role_name'])) {
+            $_SESSION['role_id'] = (string) $sessionUser['role_id'];
+            $_SESSION['role_name'] = $sessionUser['role_name'];
+            redirectToAuthenticatedHome($sessionUser['role_name'], $sessionUserId);
         }
     }
 
@@ -121,8 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = (string) $user['username'];
             unset($_SESSION['csrf_token']);
 
-            header('Location: ' . BASE_URL . '/dashboard.php');
-            exit;
+            redirectToAuthenticatedHome((string) $user['role_name'], (int) $user['id']);
         }
     }
 }
@@ -145,7 +104,7 @@ $escape = static fn (string $value): string => htmlspecialchars(
     <main class="auth-card">
         <p class="eyebrow">CAMPUSFIND</p>
         <h1>Welcome back</h1>
-        <p class="intro">Sign in to manage your lost and found activity.</p>
+        <p class="intro">Sign in once to access your CampusFind services.</p>
 
         <?php if (isset($_GET['registered'])): ?>
             <p class="notice" role="status">Your account is ready. Sign in to continue.</p>
