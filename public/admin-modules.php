@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
+require_once dirname(__DIR__) . '/includes/notifications.php';
 
 requireRole(['admin']);
 
@@ -57,7 +58,9 @@ $displayName = trim(
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Choose an admin module | <?= $escape(APP_NAME) ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/auth.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/notifications.css">
     <style>
+        .admin-notification-header { display: flex; justify-content: flex-end; width: min(460px, calc(100% - 32px)); margin: 20px auto 0; }
         .module-options { display: grid; gap: 12px; margin: 24px 0; }
         .module-option {
             display: block; padding: 16px; border: 1px solid #dfe7df;
@@ -72,6 +75,9 @@ $displayName = trim(
     </style>
 </head>
 <body>
+    <header class="admin-notification-header">
+        <?php renderNotificationBell($pdo, (int) $_SESSION['user_id']); ?>
+    </header>
     <main class="auth-card">
         <p class="eyebrow">CAMPUSFIND ADMINISTRATION</p>
         <?php if ($modules): ?>

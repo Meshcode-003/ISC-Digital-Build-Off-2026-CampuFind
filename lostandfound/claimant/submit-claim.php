@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/config/config.php';
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
 require_once dirname(__DIR__, 2) . '/includes/csrf.php';
+require_once dirname(__DIR__, 2) . '/includes/notifications.php';
 
 requireRole(['student', 'staff']);
 
@@ -164,6 +165,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'claim_description' => $claimDescription,
                 'proof_description' => $proofDescription,
             ]);
+            $claimId = (int) $pdo->lastInsertId();
+            notifyModuleAdministrators(
+                $pdo,
+                'lost_items',
+                'Ownership claim awaiting review',
+                $claimant['first_name'] . ' ' . $claimant['last_name'] . ' submitted a claim for "' . $item['item_name'] . '".',
+                APP_BASE_PATH . '/lostandfound/admin/claims.php',
+                'lost-claim-submission:' . $claimId,
+                true
+            );
 
             $pdo->commit();
             header('Location: my-claims.php?submitted=1');

@@ -42,6 +42,7 @@ if ($conversationId === null) {
     $create->execute(['request_id' => $requestId]);
     $conversationId = (int) $pdo->lastInsertId();
 }
+$conversationId = (int) $conversationId;
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -50,23 +51,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($message === '' || mb_strlen($message) > 4000) {
         $errors[] = 'A message is required and must be no more than 4,000 characters.';
     } else {
-        $insert = $pdo->prepare(
-            'INSERT INTO mentorship_messages (conversation_id, sender_user_id, message)
-             VALUES (:conversation_id, :sender_user_id, :message)'
-        );
-        $insert->execute([
-            'conversation_id' => (int) $conversationId,
-            'sender_user_id' => $mentorshipUserId,
-            'message' => $message,
-        ]);
         $otherUserId = (int) $request['student_user_id'] === $mentorshipUserId
             ? (int) $request['mentor_user_id']
             : (int) $request['student_user_id'];
-        $updateConversation = $pdo->prepare(
-            'UPDATE mentorship_conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = :id'
-        );
-        $updateConversation->execute(['id' => (int) $conversationId]);
-        mentorshipNotify($otherUserId, 'New mentorship message', 'You have a new message in your mentorship conversation.');
+        $pdo->beginTransaction();
+        try {
+            $insert = $pdo->prepare(
+                'INSERT INTO mentorship_messages (conversation_id, sender_user_id, message)
+                 VALUES (:conversation_id, :sender_user_id, :message)'
+            );
+            $insert->execute([
+                'conversation_id' => $conversationId,
+                'sender_user_id' => $mentorshipUserId,
+                'message' => $message,
+            ]);
+            $updateConversation = $pdo->prepare(
+                'UPDATE mentorship_conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = :id'
+            );
+            $updateConversation->execute(['id' => $conversationId]);
+            if (!mentorshipConversationIsActive($pdo, $conversationId, $otherUserId)) {
+                createNotification(
+                    $pdo,
+                    $otherUserId,
+                    'New mentorship message',
+                    'You have a new message in your mentorship conversation.',
+                    'message',
+                    APP_BASE_PATH . '/mentorship/conversation.php?id=' . $requestId,
+                    'mentorship-conversation:' . $conversationId,
+                    refreshExisting: true
+                );
+            }
+            $pdo->commit();
+        } catch (Throwable $exception) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $exception;
+        }
         mentorshipRedirect('conversation.php?id=' . $requestId);
     }
 }
@@ -122,7 +143,7 @@ mentorshipPageStart('Mentorship Messages');
     let polling = false;
 
     async function poll() {
-        if (polling) return;
+        if (polling || document.visibilityState !== 'visible') return;
         polling = true;
         try {
             const body = new URLSearchParams({
@@ -160,6 +181,7 @@ mentorshipPageStart('Mentorship Messages');
             polling = false;
         }
     }
+    poll();
     window.setInterval(poll, 8000);
 })();
 </script>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
+require_once dirname(__DIR__) . '/includes/notifications.php';
 
 requireLogin();
 
@@ -37,6 +38,7 @@ $escape = static fn ($value): string => htmlspecialchars(
     <title>Report Lost Item | CampusFind</title>
 
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/notifications.css">
 </head>
 
 <body>
@@ -46,6 +48,7 @@ $escape = static fn ($value): string => htmlspecialchars(
     <div class="logo">Lost & Found</div>
 
     <nav>
+        <?php renderNotificationBell($pdo, (int) $_SESSION['user_id']); ?>
         <a href="index.php">Home</a>
         <a href="report-item.php">Report Lost Item</a>
         <a href="lost-items.php">Lost Items</a>

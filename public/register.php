@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
+require_once dirname(__DIR__) . '/includes/notifications.php';
 
 if (isset($_SESSION['user_id'])) {
     header('Location: ' . BASE_URL . '/dashboard.php');
@@ -75,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'That account type is currently unavailable.';
             } else {
                 try {
+                    $pdo->beginTransaction();
                     $insert = $pdo->prepare(
                         'INSERT INTO users
                             (role_id, first_name, last_name, username, email, phone, password_hash)
@@ -90,10 +92,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'phone' => $form['phone'] !== '' ? $form['phone'] : null,
                         'password_hash' => password_hash($password, PASSWORD_DEFAULT),
                     ]);
+                    $newUserId = (int) $pdo->lastInsertId();
+                    notifySuperAdministrators(
+                        $pdo,
+                        'New CampusFind registration',
+                        $form['first_name'] . ' ' . $form['last_name'] . ' registered as a ' . $form['role'] . '.',
+                        SUPERADMIN_URL . '/dashboard.php#users',
+                        'user-registration:' . $newUserId,
+                        null,
+                        'registration'
+                    );
+                    $pdo->commit();
 
                     header('Location: ' . BASE_URL . '/login.php?registered=1');
                     exit;
                 } catch (PDOException $exception) {
+                    if ($pdo->inTransaction()) {
+                        $pdo->rollBack();
+                    }
                     if ($exception->getCode() !== '23000') {
                         throw $exception;
                     }

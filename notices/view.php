@@ -59,12 +59,14 @@ $author = trim($notice['first_name'] . ' ' . $notice['last_name']);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= noticeEscape($notice['title']) ?> | Campus Notices</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/modules.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/notifications.css">
     <link rel="stylesheet" href="<?= noticeEscape(NOTICES_URL) ?>/notices.css">
 </head>
 <body>
     <header class="notice-header">
         <a class="brand" href="<?= noticeEscape(NOTICES_URL) ?>/">Campus Notices</a>
         <div class="header-actions">
+            <?php renderNotificationBell($pdo, (int) $_SESSION['user_id']); ?>
             <span class="user-name"><?= noticeEscape($_SESSION['first_name'] ?? 'CampusFind user') ?></span>
             <form method="post" action="<?= BASE_URL ?>/logout.php">
                 <input type="hidden" name="csrf_token" value="<?= noticeEscape(generateCsrfToken()) ?>">

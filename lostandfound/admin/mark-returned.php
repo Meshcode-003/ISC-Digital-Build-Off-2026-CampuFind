@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 // Load authentication, configuration and database connection.
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
+require_once dirname(__DIR__, 2) . '/includes/notifications.php';
 
 requireAdmin();
 
@@ -50,7 +51,7 @@ try {
 
     // Find and lock the item.
     $itemStmt = $pdo->prepare("
-        SELECT id, item_type, status
+        SELECT id, user_id, item_name, item_type, status
         FROM items
         WHERE id = ?
         FOR UPDATE
@@ -129,6 +130,37 @@ try {
             'The item could not be updated. Please try again.'
         );
     }
+
+    createNotification(
+        $pdo,
+        (int) $approvedClaims[0]['claimant_id'],
+        'Item recovery recorded',
+        'The handover for "' . $item['item_name'] . '" has been recorded as complete.',
+        'recovery',
+        APP_BASE_PATH . '/lostandfound/claimant/my-claims.php',
+        'item-recovered:' . $itemId,
+        $itemId,
+        $approvedClaimId
+    );
+    createNotification(
+        $pdo,
+        (int) $item['user_id'],
+        'Your lost item was recovered',
+        'The item "' . $item['item_name'] . '" has been returned to its claimant.',
+        'recovery',
+        APP_BASE_PATH . '/lostandfound/lost-items.php',
+        'item-recovered-owner:' . $itemId,
+        $itemId,
+        $approvedClaimId
+    );
+    notifySuperAdministrators(
+        $pdo,
+        'Lost item recovery completed',
+        'An administrator recorded the recovery of "' . $item['item_name'] . '".',
+        APP_BASE_PATH . '/lostandfound/admin/manage-items.php',
+        'item-recovered-admin:' . $itemId,
+        $adminId
+    );
 
     // Complete transaction.
     $pdo->commit();

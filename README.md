@@ -34,8 +34,14 @@ The additive migrations in [`database/migrations/`](database/migrations/) preser
 1. [`001_add_notices_and_mentorship.sql`](database/migrations/001_add_notices_and_mentorship.sql) adds the Campus Notices tables and the core mentor profile, expertise, and request tables.
 2. [`002_mentorship_workflows.sql`](database/migrations/002_mentorship_workflows.sql) adds mentor applications and application expertise, WhatsApp contact preferences, conversations, messages, and sessions. It also creates a conversation for any already-accepted mentorship request.
 3. [`003_module_admin_assignments.sql`](database/migrations/003_module_admin_assignments.sql) stores administrator-to-module assignments for Lost Items, Notices, and Mentorship.
+4. [`004_add_notice_targeting_and_user_affiliations.sql`](database/migrations/004_add_notice_targeting_and_user_affiliations.sql) adds school/department targeting for notices.
+5. [`005_enhance_notices.sql`](database/migrations/005_enhance_notices.sql) adds notice summaries and structured details.
+6. [`006_seed_notice_categories.sql`](database/migrations/006_seed_notice_categories.sql) seeds the standard notice categories.
+7. [`007_centralized_notifications.sql`](database/migrations/007_centralized_notifications.sql) extends the existing notification table with internal destinations and deduplication, and adds mentorship conversation presence.
 
-Back up the database, then apply unapplied migrations in order to the existing `campusfind` database. Migrations 001 and 002 have already been applied in the current XAMPP environment; migration 003 is applied as part of this deployment. These migrations reuse `users` and do not create another authentication or notification system. The application uses the existing singular `notification` table for user alerts.
+Back up the database, then apply unapplied migrations in order to the existing `campusfind` database. These migrations reuse `users` and the existing singular `notification` table; no separate notification or authentication system is created. Apply migration 007 before deploying the updated PHP code.
+
+The shared notification helpers serve Lost & Found, Notices, Mentorship, module administrators, and Super Admins. The authenticated notification page is `/campusfind/public/notifications.php`; notification actions require the existing CSRF token. Module-admin alerts are routed through `module_admin_assignments`, while system-wide events are routed to active Super Admin accounts.
 
 ## Super Admin: administrator registration
 
@@ -64,4 +70,4 @@ The bootstrap script is CLI-only and refuses to create a second Super Admin. Mod
 
 ## Landing page
 
-Open `http://localhost/campusfind/` to view the responsive three-service landing page. It is static HTML/CSS and its service cards do not navigate to backend routes or call APIs. The Notices and Mentorship modules are not implemented here.
+Open `http://localhost/campusfind/` to view the responsive three-service landing page. It is static HTML/CSS; Notices and Mentorship workflows are served by their separate PHP module routes described above.

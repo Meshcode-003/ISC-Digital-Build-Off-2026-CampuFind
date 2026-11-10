@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
+require_once dirname(__DIR__) . '/includes/csrf.php';
+require_once dirname(__DIR__) . '/includes/notifications.php';
 
 requireLogin();
 
@@ -59,6 +61,7 @@ $items = $stmt->fetchAll();
     <title>Lost Items | CampusFind</title>
 
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/notifications.css">
 
     <style>
         .claim-button {
@@ -117,6 +120,7 @@ $items = $stmt->fetchAll();
     <div class="logo">Lost & Found</div>
 
     <nav>
+        <?php renderNotificationBell($pdo, $userId); ?>
         <a href="../public/dashboard.php">Go to my CampusFind account</a>
         <a href="index.php">Home</a>
         <a href="report-item.php">Report Item</a>

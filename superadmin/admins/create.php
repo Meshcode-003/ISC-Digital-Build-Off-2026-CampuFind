@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/config/config.php';
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
 require_once dirname(__DIR__, 2) . '/includes/csrf.php';
+require_once dirname(__DIR__, 2) . '/includes/notifications.php';
 
 requireRole(['super_admin']);
 
@@ -176,6 +177,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ? substr((string) $_SERVER['HTTP_USER_AGENT'], 0, 500)
                     : null,
             ]);
+
+            createNotification(
+                $pdo,
+                $adminUserId,
+                'Administrator account created',
+                'Your CampusFind administrator account is ready. Your assigned modules are available from the dashboard.',
+                'admin',
+                BASE_URL . '/admin-modules.php',
+                'admin-account-created:' . $adminUserId
+            );
+            notifySuperAdministrators(
+                $pdo,
+                'Administrator account created',
+                $description,
+                SUPERADMIN_URL . '/dashboard.php#administrators',
+                'admin-account-created:' . $adminUserId,
+                (int) $_SESSION['user_id']
+            );
 
             $pdo->commit();
             $_SESSION['admin_registration_success'] = 'Administrator account and module assignments created successfully.';

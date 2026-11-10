@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
+require_once dirname(__DIR__) . '/includes/notifications.php';
 
 requireRole(['student', 'staff', 'admin', 'super_admin']);
 
@@ -69,21 +70,6 @@ function mentorshipRenderFlash(): void
         . '</div>';
 }
 
-function mentorshipNotify(int $userId, string $title, string $message): void
-{
-    global $pdo;
-
-    $statement = $pdo->prepare(
-        'INSERT INTO notification (user_id, title, message, notification_type)
-         VALUES (:user_id, :title, :message, \'system\')'
-    );
-    $statement->execute([
-        'user_id' => $userId,
-        'title' => $title,
-        'message' => $message,
-    ]);
-}
-
 function mentorshipNormalizePhone(?string $phone): ?string
 {
     if ($phone === null) {
@@ -122,12 +108,14 @@ function mentorshipPageStart(string $title): void
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title><?= mentorshipEscape($title) ?> | <?= mentorshipEscape(APP_NAME) ?></title>
         <link rel="stylesheet" href="<?= mentorshipEscape(BASE_URL . '/modules.css') ?>">
+        <link rel="stylesheet" href="<?= mentorshipEscape(BASE_URL . '/notifications.css') ?>">
         <link rel="stylesheet" href="<?= mentorshipEscape($mentorshipModulePath . '/mentorship.css') ?>">
     </head>
     <body>
     <header class="module-header">
         <a class="brand" href="<?= mentorshipEscape($mentorshipModulePath . '/../') ?>">CampusFind</a>
         <div class="account">
+            <?php renderNotificationBell($pdo, (int) $mentorshipUser['id']); ?>
             <span><?= mentorshipEscape($displayName) ?></span>
             <form method="post" action="<?= mentorshipEscape(BASE_URL . '/logout.php') ?>">
                 <input type="hidden" name="csrf_token" value="<?= mentorshipEscape(generateCsrfToken()) ?>">
@@ -137,7 +125,10 @@ function mentorshipPageStart(string $title): void
     </header>
     <nav class="module-nav" aria-label="Mentorship">
         <a href="<?= mentorshipEscape($mentorshipModulePath . '/index.php') ?>">Discover mentors</a>
-        <a href="<?= mentorshipEscape($mentorshipModulePath . '/requests.php') ?>">Requests</a>
+        <?php $unreadMessages = getUnreadMentorshipMessageCount($pdo, (int) $mentorshipUser['id']); ?>
+        <a href="<?= mentorshipEscape($mentorshipModulePath . '/requests.php') ?>">
+            Requests<?php if ($unreadMessages > 0): ?> <span class="cf-message-count"><?= $unreadMessages > 99 ? '99+' : $unreadMessages ?></span><?php endif; ?>
+        </a>
         <a href="<?= mentorshipEscape($mentorshipModulePath . '/profile.php') ?>">My mentor profile</a>
         <a href="<?= mentorshipEscape($mentorshipModulePath . '/apply.php') ?>">Become a mentor</a>
         <?php if (in_array($mentorshipUser['role_name'], ['admin', 'super_admin'], true)): ?>

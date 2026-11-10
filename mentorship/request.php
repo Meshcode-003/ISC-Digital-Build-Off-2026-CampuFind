@@ -73,10 +73,14 @@ try {
         'mentor_id' => $mentorId,
         'message' => $message,
     ]);
-    mentorshipNotify(
+    createNotification(
+        $pdo,
         $mentorId,
         'New mentorship request',
-        $mentorshipUser['first_name'] . ' ' . $mentorshipUser['last_name'] . ' sent you a mentorship request.'
+        $mentorshipUser['first_name'] . ' ' . $mentorshipUser['last_name'] . ' sent you a mentorship request.',
+        'mentorship',
+        APP_BASE_PATH . '/mentorship/requests.php',
+        'mentorship-request:' . (int) $pdo->lastInsertId()
     );
     $pdo->commit();
     mentorshipSetFlash('Your mentorship request has been sent.');

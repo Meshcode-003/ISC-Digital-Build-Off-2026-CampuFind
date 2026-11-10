@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
+require_once dirname(__DIR__) . '/includes/notifications.php';
 
 requireLogin();
 
@@ -60,6 +61,7 @@ $services = [
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>UEAB CAMPUS VIBE | <?= $escape(APP_NAME) ?></title>
+    <link rel="stylesheet" href="<?= $escape(BASE_URL) ?>/notifications.css">
 
     <style>
         * {
@@ -352,6 +354,8 @@ $services = [
         </div>
 
         <div class="account">
+
+            <?php renderNotificationBell($pdo, (int) $_SESSION['user_id']); ?>
 
             <span>
                 Welcome, <?= $escape($name) ?>
