@@ -99,6 +99,8 @@ $escape = static fn (string $value): string => htmlspecialchars(
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sign in | <?= $escape(APP_NAME) ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/auth.css">
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
 <body>
     <main class="auth-card">

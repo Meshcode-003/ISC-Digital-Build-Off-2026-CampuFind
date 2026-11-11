@@ -54,6 +54,8 @@ $submitted = isset($_GET['submitted']) && $_GET['submitted'] === '1';
         .notice { padding: 12px; border-radius: 6px; background: #e1f7e7; color: #176b2c; }
         .empty { padding: 28px; text-align: center; background: white; border-radius: 10px; }
     </style>
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
 <body>
 <main>

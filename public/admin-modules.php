@@ -73,6 +73,8 @@ $displayName = trim(
         .signout { margin-top: 20px; }
         .signout button { width: auto; }
     </style>
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
 <body>
     <header class="admin-notification-header">

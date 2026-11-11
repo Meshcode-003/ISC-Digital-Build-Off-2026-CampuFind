@@ -30,7 +30,7 @@ $services = [
     [
         'title' => 'Mentorship',
         'description' => 'Connect with experienced mentors, receive guidance and grow academically and professionally.',
-        'icon' => '🎓',
+        'icon' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSP96UIROpjhTdqvW04SjARyIZZNLB-6bDnG4poOnkxDw&s=10',
         'link' => '../mentorship/index.php',
         'button' => 'Explore Mentorship',
         'class' => 'mentorship'
@@ -38,7 +38,7 @@ $services = [
     [
         'title' => 'Lost & Found',
         'description' => 'Report lost belongings, browse found items and help reunite people with their property.',
-        'icon' => '🔎',
+        'icon' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTalMjzO4y6Ht-IiWQgvWRvN9yP7PI2NUT_hv1qPcKl4Q&s=10',
         'link' => '../lostandfound/lost-items.php',
         'button' => 'Explore Lost & Found',
         'class' => 'lost'
@@ -46,7 +46,7 @@ $services = [
     [
         'title' => 'Notices & Announcements',
         'description' => 'Stay updated with university announcements, important notices, events and documents.',
-        'icon' => '📢',
+        'icon' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNNIxaBj0pRiyEvpsg_pf4eDII6c_DrHuQCZK2Pj9ylA&s=10',
         'link' => '../notices/index.php',
         'button' => 'View Announcements',
         'class' => 'notices'
@@ -239,7 +239,19 @@ $services = [
 
         .service-icon {
             font-size: 42px;
+            width: 100%;
+            height: 170px;
             margin-bottom: 20px;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .module-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 10px;
         }
 
         .service-card h3 {
@@ -342,6 +354,8 @@ $services = [
             }
         }
     </style>
+    <script src="<?= $escape(BASE_URL) ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= $escape(BASE_URL) ?>/campusfind-theme.css">
 </head>
 
 <body>
@@ -428,7 +442,11 @@ $services = [
                 <article class="service-card <?= $escape($service['class']) ?>">
 
                     <div class="service-icon">
-                        <?= $service['icon'] ?>
+                        <img
+                            src="<?= $escape($service['icon']) ?>"
+                            alt="<?= $escape($service['title']) ?>"
+                            class="module-icon"
+                        >
                     </div>
 
                     <h3>

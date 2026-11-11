@@ -111,6 +111,8 @@ function mentorshipPageStart(string $title): void
         <link rel="stylesheet" href="<?= mentorshipEscape(BASE_URL . '/modules.css') ?>">
         <link rel="stylesheet" href="<?= mentorshipEscape(BASE_URL . '/notifications.css') ?>">
         <link rel="stylesheet" href="<?= mentorshipEscape($mentorshipModulePath . '/mentorship.css') ?>">
+        <script src="<?= mentorshipEscape(BASE_URL . '/campusfind-theme.js') ?>"></script>
+        <link rel="stylesheet" href="<?= mentorshipEscape(BASE_URL . '/campusfind-theme.css') ?>">
     </head>
     <body>
     <header class="module-header">

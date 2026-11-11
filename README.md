@@ -82,6 +82,7 @@ CampusFind provides one PHP application, shared authentication, and a common dat
 - One notification system serves the modules, with a notification bell, unread counts, a notifications page, and links to relevant application pages.
 - Notifications are used for events such as notice publication, lost-item review, mentorship requests and messages, and new registrations. Unread conversation notifications are reused instead of creating one for every message.
 - Superadmins manage administrator accounts and assignments, account roles/status, and system-level activity.
+- The rendered application pages share the CampusFind design tokens and a keyboard-accessible Light/Dark Mode toggle. The selected theme is stored in browser `localStorage` under `campusfind-theme` and is shared across modules on the same origin; new visitors start in Light Mode.
 
 ## Roles and access
 

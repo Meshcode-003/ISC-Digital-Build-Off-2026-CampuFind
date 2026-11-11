@@ -658,6 +658,8 @@ $hasPendingApprovals = $counts['pending_items'] + $counts['pending_reports'] + $
     <title>Super Admin Control Centre | <?= $escape(APP_NAME) ?></title>
     <link rel="stylesheet" href="<?= $escape(SUPERADMIN_URL . '/dashboard.css?v=' . filemtime(__DIR__ . '/dashboard.css')) ?>">
     <link rel="stylesheet" href="<?= $escape(BASE_URL . '/notifications.css') ?>">
+    <script src="<?= $escape(BASE_URL) ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= $escape(BASE_URL) ?>/campusfind-theme.css">
 </head>
 <body>
 <div class="app-shell">

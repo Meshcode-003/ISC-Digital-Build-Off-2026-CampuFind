@@ -39,6 +39,8 @@ $escape = static fn ($value): string => htmlspecialchars(
 
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/notifications.css">
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
 
 <body>

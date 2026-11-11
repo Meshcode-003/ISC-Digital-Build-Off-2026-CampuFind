@@ -247,9 +247,12 @@ $displayName = trim(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Register administrator | <?= $escape(APP_NAME) ?></title>
-    <link rel="stylesheet" href="superadmin.css">
+    <link rel="stylesheet" href="<?= $escape(SUPERADMIN_URL . '/superadmin.css') ?>">
+    <link rel="stylesheet" href="<?= $escape(SUPERADMIN_URL . '/admins/create.css?v=' . filemtime(__DIR__ . '/create.css')) ?>">
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
-<body>
+<body class="admin-create-page">
     <header class="superadmin-header">
         <a class="brand" href="<?= $escape(APP_BASE_PATH) ?>/index.html">CampusFind</a>
         <div class="header-actions">

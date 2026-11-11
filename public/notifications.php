@@ -81,6 +81,8 @@ $escape = static fn (string $value): string => htmlspecialchars(
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Notifications | <?= $escape(APP_NAME) ?></title>
     <link rel="stylesheet" href="<?= $escape(BASE_URL) ?>/modules.css">
+    <script src="<?= $escape(BASE_URL) ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= $escape(BASE_URL) ?>/campusfind-theme.css">
 </head>
 <body>
     <header class="module-header">

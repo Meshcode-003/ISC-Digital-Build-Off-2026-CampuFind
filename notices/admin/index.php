@@ -51,6 +51,8 @@ $csrfToken = generateCsrfToken();
     <link rel="stylesheet" href="<?= BASE_URL ?>/modules.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/notifications.css">
     <link rel="stylesheet" href="<?= noticeEscape(NOTICES_URL) ?>/notices.css">
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
 <body>
     <header class="notice-header">

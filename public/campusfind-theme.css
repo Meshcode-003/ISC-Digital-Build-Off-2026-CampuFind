@@ -1,0 +1,422 @@
+:root {
+    color-scheme: light;
+    --cf-font-family: "DM Sans", "Segoe UI", Arial, sans-serif;
+    --cf-line-height: 1.5;
+    --cf-primary: #D97706;
+    --cf-primary-hover: #F59E0B;
+    --cf-secondary: #059669;
+    --cf-secondary-hover: #065F46;
+    --cf-link: #047857;
+    --cf-success-button: #047857;
+    --cf-success-button-text: #FFFFFF;
+    --cf-text: #1F2937;
+    --cf-muted: #596579;
+    --cf-surface: #FFFFFF;
+    --cf-surface-raised: #FFFFFF;
+    --cf-background: #F4F6F9;
+    --cf-highlight: #FACC15;
+    --cf-deep-green: #102B25;
+    --cf-border: #D8DEE7;
+    --cf-input-background: #FFFFFF;
+    --cf-input-text: #1F2937;
+    --cf-success-background: #E8F5EF;
+    --cf-success-text: #075B43;
+    --cf-warning-background: #FFF7D6;
+    --cf-warning-text: #654B00;
+    --cf-danger-background: #FFF1D6;
+    --cf-danger-text: #78350F;
+    --cf-shadow: 0 10px 28px rgba(31, 41, 55, .08);
+    --cf-radius-sm: 8px;
+    --cf-radius-md: 12px;
+    --cf-radius-lg: 18px;
+    --cf-space-1: 4px;
+    --cf-space-2: 8px;
+    --cf-space-3: 12px;
+    --cf-space-4: 16px;
+    --cf-space-5: 24px;
+    --cf-space-6: 32px;
+    --ink: var(--cf-text);
+    --muted: var(--cf-muted);
+    --green: var(--cf-secondary);
+    --green-dark: var(--cf-secondary-hover);
+    --paper: var(--cf-background);
+    --white: var(--cf-surface);
+    font-family: var(--cf-font-family);
+}
+
+body :where(button:disabled, input:disabled, select:disabled, textarea:disabled, [aria-disabled="true"]) {
+    cursor: not-allowed;
+    opacity: .58;
+}
+
+body :where(.claim-button, .review-button) {
+    color: #1F2937 !important;
+    background: var(--cf-primary) !important;
+    border-color: var(--cf-primary) !important;
+}
+
+body :where(.claim-button, .review-button):hover {
+    background: var(--cf-primary-hover) !important;
+}
+
+:root[data-cf-theme="dark"] {
+    color-scheme: dark;
+    --cf-primary: #D97706;
+    --cf-primary-hover: #F59E0B;
+    --cf-secondary: #34D399;
+    --cf-secondary-hover: #6EE7B7;
+    --cf-link: #6EE7B7;
+    --cf-success-button: #34D399;
+    --cf-success-button-text: #102B25;
+    --cf-text: #F3F4F6;
+    --cf-muted: #C0CBC6;
+    --cf-surface: #1F2937;
+    --cf-surface-raised: #273832;
+    --cf-background: #102B25;
+    --cf-highlight: #FACC15;
+    --cf-deep-green: #102B25;
+    --cf-border: #465A51;
+    --cf-input-background: #172F29;
+    --cf-input-text: #F3F4F6;
+    --cf-success-background: #173C30;
+    --cf-success-text: #A7F3D0;
+    --cf-warning-background: #493B16;
+    --cf-warning-text: #FDE68A;
+    --cf-danger-background: #493B16;
+    --cf-danger-text: #FDE68A;
+    --cf-shadow: 0 12px 32px rgba(0, 0, 0, .24);
+    --ink: var(--cf-text);
+    --muted: var(--cf-muted);
+    --green: var(--cf-secondary);
+    --green-dark: var(--cf-secondary-hover);
+    --paper: var(--cf-background);
+    --white: var(--cf-surface);
+}
+
+html {
+    color-scheme: light;
+    color-scheme: inherit;
+}
+
+body {
+    color: var(--cf-text) !important;
+    background: var(--cf-background) !important;
+    font-family: var(--cf-font-family) !important;
+    line-height: var(--cf-line-height);
+}
+
+body :where(h1, h2, h3, h4, h5, h6, p, label, legend, th, td, li, small, strong, span, time, dt, dd) {
+    color: var(--cf-text) !important;
+}
+
+body :where(.navbar, .module-header, .notice-header, .superadmin-header, .header, .site-header, .topbar) {
+    color: var(--cf-text) !important;
+    background-color: var(--cf-surface) !important;
+    border-color: var(--cf-border) !important;
+}
+
+body :where(.sidebar) {
+    color: #FFFFFF !important;
+    background: var(--cf-deep-green) !important;
+    border-color: var(--cf-border) !important;
+}
+
+body :where(.sidebar, .sidebar *) {
+    color: #FFFFFF !important;
+    border-color: var(--cf-border);
+}
+
+body :where(.hero, .hero h1, .hero h2, .hero h3, .hero p, .hero a) {
+    color: #FFFFFF !important;
+}
+
+body :where(.hero .hero-label, .hero strong) {
+    color: var(--cf-highlight) !important;
+}
+
+body :where(.service-card, .item-card, .report-container, .notice-card, .detail-card, .editor-card, .empty-state, .empty-message, .filter-panel, .filter-box, .table-box, .table-container, .admin-table-wrap, .detail-box, .claim-container, .claim, .selected-item, .category-row, .panel, .module-card, .auth-card, .form-card, .settings-card, .setting-card, .admin-card, .claim-card, .review-card, .dashboard-card, .stat-card, .metric-card, .content-card, .camera-section, .module-option, .status-panel, .account-detail, .cf-notification-panel, .cf-notification-page, .card, .modal-content, .dropdown-menu) {
+    color: var(--cf-text) !important;
+    background: var(--cf-surface) !important;
+    border-color: var(--cf-border) !important;
+    box-shadow: var(--cf-shadow);
+    border-radius: var(--cf-radius-md) !important;
+}
+
+body :where(.service-card, .item-card, .report-container, .notice-card, .detail-card, .editor-card, .empty-state, .empty-message, .filter-panel, .filter-box, .table-box, .table-container, .admin-table-wrap, .detail-box, .claim-container, .claim, .selected-item, .category-row, .panel, .module-card, .auth-card, .form-card, .settings-card, .setting-card, .admin-card, .claim-card, .review-card, .dashboard-card, .stat-card, .metric-card, .content-card, .camera-section, .module-option, .status-panel, .account-detail, .cf-notification-panel, .cf-notification-page, .card, .modal-content, .dropdown-menu) :where(h1, h2, h3, h4, h5, h6, p, label, legend, strong, span, small, li, dt, dd, th, td) {
+    color: inherit;
+}
+
+body :where(a:not(.button):not(.btn):not(.service-btn):not(.btn-primary)) {
+    color: var(--cf-link) !important;
+}
+
+body :where(a:not(.button):not(.btn):not(.service-btn):not(.btn-primary)):hover {
+    color: var(--cf-link) !important;
+    text-decoration-color: var(--cf-highlight);
+    text-underline-offset: 3px;
+}
+
+body :where(.button-primary, .primary-button, .submit-button, .service-btn, .btn-primary, .button:not(.button-secondary):not(.button-outline), .camera-buttons button) {
+    color: #1F2937 !important;
+    background: var(--cf-primary) !important;
+    border-color: var(--cf-primary) !important;
+}
+
+body :where(button:not(#cf-theme-toggle):not(.text-button):not(.logout-button):not(.logout-btn):not(.button-secondary):not(.button-outline):not(.button-quiet):not(.btn-secondary):not(.btn-outline-secondary):not(.btn-outline-primary):not(.cf-notification-mark-all)) {
+    color: #1F2937 !important;
+    background: var(--cf-primary) !important;
+    border-color: var(--cf-primary) !important;
+}
+
+body :where(button:not(#cf-theme-toggle):not(.text-button):not(.logout-button):not(.logout-btn):not(.button-secondary):not(.button-outline):not(.button-quiet):not(.btn-secondary):not(.btn-outline-secondary):not(.btn-outline-primary):not(.cf-notification-mark-all)):hover {
+    background: var(--cf-primary-hover) !important;
+    border-color: var(--cf-primary-hover) !important;
+}
+
+body :where(.button-primary, .primary-button, .submit-button, .service-btn, .btn-primary, .button:not(.button-secondary):not(.button-outline), .camera-buttons button):hover {
+    background: var(--cf-primary-hover) !important;
+    border-color: var(--cf-primary-hover) !important;
+}
+
+body :where(.logout-button, .logout-btn) {
+    color: var(--cf-link) !important;
+    background: transparent !important;
+    border-color: var(--cf-border) !important;
+}
+
+body :where(.button-secondary, .button-outline, .btn-secondary, .btn-outline-secondary, .button-quiet, .link-button, .back-button, .text-button) {
+    color: var(--cf-link) !important;
+    background: var(--cf-surface) !important;
+    border-color: var(--cf-border) !important;
+}
+
+body :where(.button-danger, .btn-danger) {
+    color: #1F2937 !important;
+    background: var(--cf-primary) !important;
+    border-color: var(--cf-primary) !important;
+}
+
+body :where(.button-danger, .btn-danger):hover {
+    background: var(--cf-primary-hover) !important;
+}
+
+body :where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea) {
+    color: var(--cf-input-text) !important;
+    background-color: var(--cf-input-background) !important;
+    border-color: var(--cf-border) !important;
+    border-radius: var(--cf-radius-sm) !important;
+}
+
+body :where(input, textarea)::placeholder {
+    color: var(--cf-muted) !important;
+    opacity: 1;
+}
+
+body :where(input, select, textarea, button, a, summary):focus-visible {
+    outline: 3px solid var(--cf-highlight) !important;
+    outline-offset: 2px;
+}
+
+body :where(table, .data-table, .table) {
+    color: var(--cf-text) !important;
+    border-color: var(--cf-border) !important;
+    max-width: 100%;
+}
+
+body :where(th, td, .data-table th, .data-table td, .table th, .table td) {
+    color: var(--cf-text);
+    border-color: var(--cf-border) !important;
+}
+
+body :where(thead, .table-light, .table thead th) {
+    color: var(--cf-text) !important;
+    background: var(--cf-surface-raised) !important;
+}
+
+body :where(tbody tr, tbody td, .table tbody tr, .table tbody td) {
+    background-color: transparent !important;
+}
+
+body :where(.category-pill, .priority-pill, .pinned-label, .read-label, .status-pill, .status-label, .tag-list li) {
+    color: var(--cf-secondary-hover) !important;
+    background: var(--cf-success-background) !important;
+}
+
+body :where(.status) {
+    color: var(--cf-text) !important;
+    background: var(--cf-surface-raised) !important;
+}
+
+body :where(.status-active, .status-approved, .status-published, .status-recovered, .status-completed, .status-read, .status-success, .status-returned, .status-found, .item-status, .status-open) {
+    color: var(--cf-success-text) !important;
+    background: var(--cf-success-background) !important;
+}
+
+body :where(.priority-high, .priority-urgent, .status-pending, .status-draft, .status-scheduled, .status-suspended, .status-rejected, .status-archived, .status-inactive, .status-expired) {
+    color: var(--cf-warning-text) !important;
+    background: var(--cf-warning-background) !important;
+}
+
+body :where(.item-category) {
+    color: #1F2937 !important;
+    background: var(--cf-highlight) !important;
+}
+
+body :where(.status-tabs a.active, .status-tabs a:hover) {
+    color: var(--cf-text) !important;
+    background: var(--cf-warning-background) !important;
+}
+
+body :where(.cf-notification-panel, .cf-notification-panel li, .cf-notification-page li) {
+    color: var(--cf-text) !important;
+    background: var(--cf-surface) !important;
+    border-color: var(--cf-border) !important;
+}
+
+body :where(.cf-notification-panel li button, .cf-notification-page li button, .cf-notification-mark-all) {
+    color: var(--cf-text) !important;
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+body :where(.cf-notification-menu > summary) {
+    color: var(--cf-text) !important;
+    background: var(--cf-surface) !important;
+    border-color: var(--cf-border) !important;
+}
+
+body :where(.cf-notification-count, .cf-message-count) {
+    color: #1F2937 !important;
+    background: var(--cf-highlight) !important;
+}
+
+body :where(.cf-notification-copy > span, .cf-notification-copy time, .cf-notification-empty, .muted, .page-intro, .notice-summary, .notice-meta, .subheading, .section-description, .table-note, .data-note, .updated-label, .result-count, .pagination) {
+    color: var(--cf-muted) !important;
+}
+
+body :where(.cf-notification-panel li.is-unread, .cf-notification-page li.is-unread) {
+    background: var(--cf-success-background) !important;
+}
+
+body :where(.flash-success, .alert-success, .notice, .status-success, .badge-success, .alert-info, .success-message) {
+    color: var(--cf-success-text) !important;
+    background: var(--cf-success-background) !important;
+}
+
+body :where(.flash-error, .alert-danger, .alert-error, .error, .error-message) {
+    color: var(--cf-danger-text) !important;
+    background: var(--cf-danger-background) !important;
+}
+
+body :where(.btn-success, .button-success) {
+    color: var(--cf-success-button-text) !important;
+    background: var(--cf-success-button) !important;
+    border-color: var(--cf-success-button) !important;
+}
+
+body :where(.bg-white) {
+    color: var(--cf-text) !important;
+    background-color: var(--cf-surface) !important;
+}
+
+body :where(.bg-light, .table-light) {
+    color: var(--cf-text) !important;
+    background-color: var(--cf-surface-raised) !important;
+}
+
+body :where(.text-muted) {
+    color: var(--cf-muted) !important;
+}
+
+body :where(.text-success) {
+    color: var(--cf-success-text) !important;
+}
+
+body :where(.text-danger) {
+    color: var(--cf-danger-text) !important;
+}
+
+body :where(.claim-disabled) {
+    cursor: not-allowed;
+    opacity: .58;
+}
+
+body :where(.alert-warning, .alert-warn, .flash-warning, .warning, .system-alert, .priority-high, .pinned-label) {
+    color: var(--cf-warning-text) !important;
+    background: var(--cf-warning-background) !important;
+}
+
+body footer {
+    color: #FFFFFF !important;
+    background: var(--cf-deep-green) !important;
+}
+
+body footer :where(p, strong, span, a) {
+    color: #FFFFFF !important;
+}
+
+body footer a {
+    color: var(--cf-highlight) !important;
+}
+
+#cf-theme-toggle {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--cf-border);
+    border-radius: 999px;
+    color: var(--cf-text);
+    background: var(--cf-surface);
+    box-shadow: 0 3px 12px rgba(31, 41, 55, .12);
+    cursor: pointer;
+    font: inherit;
+    font-size: .82rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+#cf-theme-toggle:hover {
+    border-color: var(--cf-primary);
+}
+
+#cf-theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+}
+
+#cf-theme-toggle.cf-theme-toggle-floating {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9999;
+}
+
+@media (max-width: 600px) {
+    body :where(table, .data-table, .table) {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    #cf-theme-toggle {
+        min-height: 36px;
+        padding: 7px 10px;
+        font-size: .78rem;
+    }
+
+    #cf-theme-toggle.cf-theme-toggle-floating {
+        right: 12px;
+        bottom: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    body,
+    body :where(.service-card, .item-card, .notice-card, .panel, .button, button, a) {
+        transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+    }
+}

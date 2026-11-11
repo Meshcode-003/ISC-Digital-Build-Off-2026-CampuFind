@@ -227,6 +227,8 @@ $claimantName = trim($claimant['first_name'] . ' ' . $claimant['last_name']);
         .success { background: #e1f7e7; color: #176b2c; }
         .back-link { display: inline-block; margin: 20px 16px 0 0; color: #174e38; }
     </style>
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
 <body>
 <main class="claim-container">
