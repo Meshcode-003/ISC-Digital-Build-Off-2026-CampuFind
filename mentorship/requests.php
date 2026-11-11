@@ -80,7 +80,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'cancelled' => 'Mentorship request cancelled',
                         'completed' => 'Mentorship connection completed',
                     ];
-                    mentorshipNotify($recipientId, $titles[$newStatus], 'A mentorship request has been ' . $newStatus . '.');
+                    createNotification(
+                        $pdo,
+                        $recipientId,
+                        $titles[$newStatus],
+                        'A mentorship request has been ' . $newStatus . '.',
+                        'mentorship',
+                        APP_BASE_PATH . '/mentorship/requests.php',
+                        'mentorship-request-status:' . (int) $request['id'] . ':' . $newStatus
+                    );
                     $pdo->commit();
                     mentorshipSetFlash('The request has been ' . $newStatus . '.');
                     mentorshipRedirect('requests.php');

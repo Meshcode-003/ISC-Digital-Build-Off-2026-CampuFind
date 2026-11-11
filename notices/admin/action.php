@@ -37,6 +37,14 @@ try {
     $statement->execute(['id' => $noticeId]);
     if ($action === 'publish') {
         notifyNoticeAudience((int) $noticeId);
+    } elseif ($action === 'archive' && $statement->rowCount() > 0) {
+        notifySuperAdministrators(
+            $pdo,
+            'Campus notice archived',
+            'A campus notice was archived by an administrator.',
+            NOTICES_URL . '/admin/',
+            'notice-archived:' . (int) $noticeId
+        );
     }
     $pdo->commit();
 } catch (Throwable $exception) {

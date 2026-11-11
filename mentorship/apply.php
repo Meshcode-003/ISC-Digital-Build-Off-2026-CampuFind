@@ -105,6 +105,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isMentor) {
                         'description' => $area['description'] !== '' ? $area['description'] : null,
                     ]);
                 }
+                notifyModuleAdministrators(
+                    $pdo,
+                    'mentorship',
+                    'Mentor application awaiting review',
+                    $mentorshipUser['first_name'] . ' ' . $mentorshipUser['last_name'] . ' submitted a mentor application.',
+                    APP_BASE_PATH . '/mentorship/admin/review.php?id=' . $applicationId,
+                    'mentor-application:' . $applicationId,
+                    true
+                );
                 $pdo->commit();
                 mentorshipSetFlash('Your mentor application has been submitted for review.');
                 mentorshipRedirect('apply.php');

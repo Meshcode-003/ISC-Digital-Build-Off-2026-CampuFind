@@ -1,0 +1,148 @@
+.admin-create-page {
+    min-height: 100vh;
+}
+
+.admin-create-page .superadmin-header {
+    width: min(1120px, calc(100% - 48px));
+    min-height: 76px;
+    gap: var(--cf-space-4);
+}
+
+.admin-create-page .header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.admin-create-page .page-main {
+    width: min(820px, calc(100% - 40px));
+    margin: clamp(28px, 6vh, 56px) auto 72px;
+}
+
+.admin-create-page .page-main > h1 {
+    margin-bottom: var(--cf-space-2);
+}
+
+.admin-create-page .intro {
+    max-width: 62ch;
+    margin: var(--cf-space-3) 0 var(--cf-space-5);
+}
+
+.admin-create-page .form-card {
+    padding: clamp(22px, 5vw, 40px);
+}
+
+.admin-create-page .form-grid {
+    align-items: start;
+    column-gap: var(--cf-space-5);
+    row-gap: var(--cf-space-4);
+}
+
+.admin-create-page .field {
+    min-width: 0;
+}
+
+.admin-create-page .field label,
+.admin-create-page .module-picker legend {
+    display: block;
+    margin-bottom: var(--cf-space-1);
+}
+
+.admin-create-page .field label span {
+    color: var(--cf-muted);
+    font-size: .82em;
+    font-weight: 400;
+}
+
+.admin-create-page .field input {
+    min-height: 46px;
+}
+
+.admin-create-page .module-options {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    gap: var(--cf-space-3);
+}
+
+.admin-create-page .module-option {
+    min-height: 100%;
+    padding: var(--cf-space-4);
+    cursor: pointer;
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.admin-create-page .module-option:hover {
+    border-color: var(--cf-primary);
+    transform: translateY(-1px);
+}
+
+.admin-create-page .module-option:focus-within {
+    outline: 3px solid var(--cf-highlight);
+    outline-offset: 2px;
+}
+
+.admin-create-page .module-option input {
+    accent-color: var(--cf-secondary);
+}
+
+.admin-create-page .module-option span {
+    min-width: 0;
+}
+
+.admin-create-page .module-option small {
+    line-height: 1.5;
+}
+
+.admin-create-page .password-note {
+    margin: calc(-1 * var(--cf-space-2)) 0 0;
+}
+
+.admin-create-page .submit-row {
+    padding-top: var(--cf-space-2);
+}
+
+.admin-create-page .primary-button {
+    min-height: 46px;
+    padding-inline: var(--cf-space-5);
+}
+
+.admin-create-page .alert {
+    margin-bottom: var(--cf-space-4);
+}
+
+@media (max-width: 560px) {
+    .admin-create-page .superadmin-header {
+        width: calc(100% - 32px);
+        align-items: flex-start;
+        padding-block: var(--cf-space-4);
+    }
+
+    .admin-create-page .header-actions {
+        gap: var(--cf-space-2);
+    }
+
+    .admin-create-page .page-main {
+        width: calc(100% - 32px);
+        margin-top: 28px;
+    }
+
+    .admin-create-page .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .admin-create-page .field-full,
+    .admin-create-page .module-picker,
+    .admin-create-page .password-note,
+    .admin-create-page .submit-row {
+        grid-column: 1;
+    }
+
+    .admin-create-page .submit-row,
+    .admin-create-page .primary-button {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-create-page .module-option {
+        transition: none;
+    }
+}

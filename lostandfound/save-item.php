@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
+require_once dirname(__DIR__) . '/includes/notifications.php';
 
 requireLogin();
 
@@ -224,6 +225,16 @@ try {
         'original_filename' => $imageName,
         'file_size' => strlen($image)
     ]);
+
+    notifyModuleAdministrators(
+        $pdo,
+        'lost_items',
+        'Lost item awaiting review',
+        'A new lost item report was submitted: ' . $itemName,
+        APP_BASE_PATH . '/lostandfound/admin/manage-items.php',
+        'lost-item-submission:' . $itemId,
+        true
+    );
 
     $pdo->commit();
 

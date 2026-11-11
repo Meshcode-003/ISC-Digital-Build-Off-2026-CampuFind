@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/config/config.php';
 require_once dirname(__DIR__) . '/includes/auth.php';
 require_once dirname(__DIR__) . '/includes/csrf.php';
+require_once dirname(__DIR__) . '/includes/notifications.php';
 
 requireRole(['super_admin']);
 
@@ -144,6 +145,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
             }
 
+            notifySuperAdministrators(
+                $pdo,
+                $action === 'user_status' ? 'User account status changed' : 'User role changed',
+                sprintf('A superadministrator updated %s (user ID %d).', $targetName, $targetId),
+                SUPERADMIN_URL . '/dashboard.php#users',
+                'superadmin-account-change:' . bin2hex(random_bytes(12)),
+                $currentUserId
+            );
             $pdo->commit();
             $_SESSION['superadmin_flash'] = ['kind' => 'success', 'message' => 'Account changes saved.'];
         } elseif ($action === 'report_decision') {
@@ -204,23 +213,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException('The report changed while being reviewed. Refresh and retry.');
             }
 
-            $notification = $pdo->prepare(
-                'INSERT INTO notification (
-                    user_id, title, message, notification_type, related_item_id, related_report_id
-                 ) VALUES (
-                    :user_id, :title, :message, :notification_type, :item_id, :report_id
-                 )'
-            );
-            $notification->execute([
-                'user_id' => (int) $report['reporter_id'],
-                'title' => $decision === 'approved' ? 'Lost item report approved' : 'Lost item report not approved',
-                'message' => $decision === 'approved'
+            createNotification(
+                $pdo,
+                (int) $report['reporter_id'],
+                $decision === 'approved' ? 'Lost item report approved' : 'Lost item report not approved',
+                $decision === 'approved'
                     ? 'Your lost item report #' . $reportId . ' was approved.'
                     : 'Your lost item report #' . $reportId . ' was not approved. Reason: ' . $reason,
-                'notification_type' => $decision === 'approved' ? 'approval' : 'rejection',
-                'item_id' => (int) $report['item_id'],
-                'report_id' => $reportId,
-            ]);
+                $decision === 'approved' ? 'approval' : 'rejection',
+                APP_BASE_PATH . '/lostandfound/',
+                'lost-report-review:' . $reportId . ':' . $decision,
+                (int) $report['item_id'],
+                null,
+                $reportId
+            );
+            notifyModuleAdministrators(
+                $pdo,
+                'lost_items',
+                'Lost item report moderated',
+                'A superadministrator ' . $decision . ' a lost item report.',
+                APP_BASE_PATH . '/lostandfound/admin/manage-items.php',
+                'lost-report-management:' . $reportId . ':' . $decision,
+                true,
+                $currentUserId
+            );
             $logActivity(
                 'LOST_REPORT_' . strtoupper($decision),
                 sprintf('Marked lost item report %d as %s.', $reportId, $decision)
@@ -298,6 +314,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 static fn (string $module): string => $moduleLabels[$module],
                 $selectedModules
             );
+            if ($target['account_status'] === 'active') {
+                createNotification(
+                    $pdo,
+                    $targetId,
+                    'Administrator module assignments updated',
+                    $assignmentNames
+                        ? 'Your CampusFind modules are now: ' . implode(', ', $assignmentNames) . '.'
+                        : 'Your CampusFind account currently has no assigned modules.',
+                    'admin',
+                        BASE_URL . '/admin-modules.php',
+                    'admin-module-assignment:' . $targetId . ':' . bin2hex(random_bytes(8))
+                );
+            }
             $logActivity(
                 'ADMIN_MODULES_CHANGED',
                 sprintf(
@@ -306,6 +335,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $targetId,
                     $assignmentNames ? implode(', ', $assignmentNames) : 'no assigned modules'
                 )
+            );
+            notifySuperAdministrators(
+                $pdo,
+                'Administrator module assignments updated',
+                sprintf('Module assignments were updated for %s (user ID %d).', $targetName, $targetId),
+                SUPERADMIN_URL . '/dashboard.php#administrators',
+                'superadmin-module-assignment:' . bin2hex(random_bytes(12)),
+                $currentUserId
             );
             $pdo->commit();
             $_SESSION['superadmin_flash'] = ['kind' => 'success', 'message' => 'Administrator module assignments saved.'];
@@ -620,6 +657,9 @@ $hasPendingApprovals = $counts['pending_items'] + $counts['pending_reports'] + $
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Super Admin Control Centre | <?= $escape(APP_NAME) ?></title>
     <link rel="stylesheet" href="<?= $escape(SUPERADMIN_URL . '/dashboard.css?v=' . filemtime(__DIR__ . '/dashboard.css')) ?>">
+    <link rel="stylesheet" href="<?= $escape(BASE_URL . '/notifications.css') ?>">
+    <script src="<?= $escape(BASE_URL) ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= $escape(BASE_URL) ?>/campusfind-theme.css">
 </head>
 <body>
 <div class="app-shell">
@@ -659,6 +699,7 @@ $hasPendingApprovals = $counts['pending_items'] + $counts['pending_reports'] + $
                 <p class="subheading">A live overview of users, services, and administrative work.</p>
             </div>
             <div class="topbar-actions">
+                <?php renderNotificationBell($pdo, $currentUserId); ?>
                 <span class="live-indicator">Database connected</span>
                 <a class="button button-primary" href="<?= $escape(SUPERADMIN_URL) ?>/admins/create.php">+ Create administrator</a>
             </div>

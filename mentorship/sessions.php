@@ -93,25 +93,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!$errors) {
-            $insert = $pdo->prepare(
-                'INSERT INTO mentorship_sessions
-                    (mentorship_request_id, created_by, title, description, scheduled_at,
-                     duration_minutes, meeting_method, location_or_meeting_link)
-                 VALUES
-                    (:request_id, :created_by, :title, :description, :scheduled_at,
-                     :duration, :method, :location)'
-            );
-            $insert->execute([
-                'request_id' => $requestId,
-                'created_by' => $mentorshipUserId,
-                'title' => $title,
-                'description' => $description !== '' ? $description : null,
-                'scheduled_at' => $date->format('Y-m-d H:i:s'),
-                'duration' => $duration,
-                'method' => $method,
-                'location' => $location !== '' ? $location : null,
-            ]);
-            mentorshipNotify($otherUserId, 'Mentorship session scheduled', 'A session has been scheduled in your mentorship connection.');
+            $pdo->beginTransaction();
+            try {
+                $insert = $pdo->prepare(
+                    'INSERT INTO mentorship_sessions
+                        (mentorship_request_id, created_by, title, description, scheduled_at,
+                         duration_minutes, meeting_method, location_or_meeting_link)
+                     VALUES
+                        (:request_id, :created_by, :title, :description, :scheduled_at,
+                         :duration, :method, :location)'
+                );
+                $insert->execute([
+                    'request_id' => $requestId,
+                    'created_by' => $mentorshipUserId,
+                    'title' => $title,
+                    'description' => $description !== '' ? $description : null,
+                    'scheduled_at' => $date->format('Y-m-d H:i:s'),
+                    'duration' => $duration,
+                    'method' => $method,
+                    'location' => $location !== '' ? $location : null,
+                ]);
+                $sessionId = (int) $pdo->lastInsertId();
+                createNotification(
+                    $pdo,
+                    $otherUserId,
+                    'Mentorship session scheduled',
+                    'A session has been scheduled in your mentorship connection.',
+                    'mentorship',
+                    APP_BASE_PATH . '/mentorship/sessions.php?id=' . $requestId,
+                    'mentorship-session:' . $sessionId . ':scheduled'
+                );
+                $pdo->commit();
+            } catch (Throwable $exception) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                throw $exception;
+            }
             mentorshipSetFlash('The mentorship session has been scheduled.');
             mentorshipRedirect('sessions.php?id=' . $requestId);
         }
@@ -139,7 +157,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'UPDATE mentorship_sessions SET status = :status WHERE id = :session_id'
                 );
                 $update->execute(['status' => $newStatus, 'session_id' => $sessionId]);
-                mentorshipNotify($otherUserId, 'Mentorship session ' . $newStatus, 'A scheduled session has been ' . $newStatus . '.');
+                createNotification(
+                    $pdo,
+                    $otherUserId,
+                    'Mentorship session ' . $newStatus,
+                    'A scheduled session has been ' . $newStatus . '.',
+                    'mentorship',
+                    APP_BASE_PATH . '/mentorship/sessions.php?id=' . $requestId,
+                    'mentorship-session:' . $sessionId . ':' . $newStatus
+                );
                 $pdo->commit();
                 mentorshipSetFlash('The session has been ' . $newStatus . '.');
                 mentorshipRedirect('sessions.php?id=' . $requestId);

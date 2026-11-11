@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/notifications.php';
 
 if (!function_exists('requireModuleAdmin')) {
     function requireModuleAdmin(string $moduleKey): void
@@ -187,77 +188,4 @@ function noticePriorityLabel(string $priority): string
         'low' => 'Low priority',
         default => 'Normal',
     };
-}
-
-function notifyNoticeAudience(int $noticeId): void
-{
-    global $pdo;
-
-    if (!$pdo->inTransaction()) {
-        throw new LogicException('Notice notifications must run within the notice transaction.');
-    }
-
-    $lock = $pdo->prepare('SELECT id FROM notices WHERE id = :id FOR UPDATE');
-    $lock->execute(['id' => $noticeId]);
-    if (!$lock->fetchColumn()) {
-        return;
-    }
-
-    $eligibleNotice = "n.id = :notice_id
-        AND n.status = 'published'
-        AND n.published_at IS NOT NULL
-        AND n.published_at <= CURRENT_TIMESTAMP
-        AND (n.expires_at IS NULL OR n.expires_at >= CURRENT_TIMESTAMP)
-        AND n.priority IN ('high', 'urgent')";
-    $eligibleRecipient = "u.account_status = 'active'
-        AND " . noticeAudienceSql('n', 'r') . "
-        AND " . noticeTargetingSql('n', 'u');
-    $noticeMarker = "CONCAT('%(CampusFind notice #', n.id, ').%')";
-
-    $removeIneligible = $pdo->prepare(
-        "DELETE existing
-         FROM notification existing
-         WHERE existing.notification_type = 'system'
-           AND existing.message LIKE CONCAT('%(CampusFind notice #', :marker_notice_id, ').%')
-           AND NOT EXISTS (
-               SELECT 1
-               FROM notices n
-               INNER JOIN users u ON u.id = existing.user_id
-               INNER JOIN roles r ON r.id = u.role_id
-               WHERE {$eligibleNotice}
-                 AND {$eligibleRecipient}
-           )"
-    );
-    $removeIneligible->execute([
-        'marker_notice_id' => $noticeId,
-        'notice_id' => $noticeId,
-    ]);
-
-    $insert = $pdo->prepare(
-        "INSERT INTO notification (user_id, title, message, notification_type)
-         SELECT u.id,
-                CASE n.priority
-                    WHEN 'urgent' THEN 'Urgent campus notice'
-                    ELSE 'Important campus notice'
-                END,
-                CONCAT(
-                    'A ', n.priority, ' campus notice was published: ',
-                    n.title, '. Read it at /campusfind/notices/view.php?id=',
-                    n.id, ' (CampusFind notice #', n.id, ').'
-                ),
-                'system'
-         FROM notices n
-         INNER JOIN users u ON u.account_status = 'active'
-         INNER JOIN roles r ON r.id = u.role_id
-         WHERE {$eligibleNotice}
-           AND {$eligibleRecipient}
-           AND NOT EXISTS (
-               SELECT 1
-               FROM notification existing
-               WHERE existing.user_id = u.id
-                 AND existing.notification_type = 'system'
-                 AND existing.message LIKE {$noticeMarker}
-           )"
-    );
-    $insert->execute(['notice_id' => $noticeId]);
 }
