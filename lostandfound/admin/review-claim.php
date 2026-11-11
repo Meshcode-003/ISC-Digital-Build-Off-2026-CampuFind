@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 // Load configuration, session, authentication and database connection.
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
+require_once dirname(__DIR__, 2) . '/includes/notifications.php';
 requireAdmin();
 
 function e($value): string
@@ -164,25 +165,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $claim_id
                 ]);
 
-                $notification = $pdo->prepare(
-                    'INSERT INTO notification (
-                        user_id, title, message, notification_type,
-                        related_item_id, related_claim_id
-                     ) VALUES (
-                        :user_id, :title, :message, :notification_type,
-                        :item_id, :claim_id
-                     )'
-                );
-                $notification->execute([
-                    'user_id' => (int) $selectedClaim['claimant_id'],
-                    'title' => $newStatus === 'approved' ? 'Ownership claim approved' : 'Ownership claim not approved',
-                    'message' => $newStatus === 'approved'
+                createNotification(
+                    $pdo,
+                    (int) $selectedClaim['claimant_id'],
+                    $newStatus === 'approved' ? 'Ownership claim approved' : 'Ownership claim not approved',
+                    $newStatus === 'approved'
                         ? 'Your claim for "' . $selectedItem['item_name'] . '" was approved. Contact the Lost & Found administrator to arrange collection.'
                         : 'Your claim for "' . $selectedItem['item_name'] . '" was not approved. Reason: ' . $rejectionReason,
-                    'notification_type' => $newStatus === 'approved' ? 'approval' : 'rejection',
-                    'item_id' => (int) $selectedClaim['item_id'],
-                    'claim_id' => $claim_id,
-                ]);
+                    $newStatus === 'approved' ? 'approval' : 'rejection',
+                    APP_BASE_PATH . '/lostandfound/claimant/my-claims.php',
+                    'lost-claim-review:' . $claim_id . ':' . $newStatus,
+                    (int) $selectedClaim['item_id'],
+                    $claim_id
+                );
+                notifySuperAdministrators(
+                    $pdo,
+                    'Lost item claim moderated',
+                    'An administrator ' . $newStatus . ' the ownership claim for "' . $selectedItem['item_name'] . '".',
+                    APP_BASE_PATH . '/lostandfound/admin/claims.php',
+                    'lost-claim-moderation:' . $claim_id . ':' . $newStatus,
+                    (int) $_SESSION['user_id']
+                );
 
                 $pdo->commit();
 
@@ -475,6 +478,8 @@ textarea {
 
 </style>
 
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
 
 <body>

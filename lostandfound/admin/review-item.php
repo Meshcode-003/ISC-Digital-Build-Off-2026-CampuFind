@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
 require_once dirname(__DIR__, 2) . '/includes/csrf.php';
+require_once dirname(__DIR__, 2) . '/includes/notifications.php';
 
 requireAdmin();
 
@@ -76,22 +77,26 @@ try {
         throw new RuntimeException('The report changed while it was being reviewed. Refresh and try again.');
     }
 
-    $notification = $pdo->prepare(
-        'INSERT INTO notification (
-            user_id, title, message, notification_type, related_item_id
-         ) VALUES (
-            :user_id, :title, :message, :notification_type, :item_id
-         )'
-    );
-    $notification->execute([
-        'user_id' => (int) $item['user_id'],
-        'title' => $decision === 'approved' ? 'Lost item report approved' : 'Lost item report not approved',
-        'message' => $decision === 'approved'
+    createNotification(
+        $pdo,
+        (int) $item['user_id'],
+        $decision === 'approved' ? 'Lost item report approved' : 'Lost item report not approved',
+        $decision === 'approved'
             ? 'Your report for "' . $item['item_name'] . '" is now visible in Lost & Found.'
             : 'Your report for "' . $item['item_name'] . '" was not approved. Reason: ' . $reason,
-        'notification_type' => $decision === 'approved' ? 'approval' : 'rejection',
-        'item_id' => $itemId,
-    ]);
+        $decision === 'approved' ? 'approval' : 'rejection',
+        APP_BASE_PATH . '/lostandfound/lost-items.php',
+        'lost-item-review:' . $itemId . ':' . $decision,
+        $itemId
+    );
+    notifySuperAdministrators(
+        $pdo,
+        'Lost item report moderated',
+        'An administrator ' . $decision . ' the lost item report for "' . $item['item_name'] . '".',
+        APP_BASE_PATH . '/lostandfound/admin/manage-items.php',
+        'lost-item-moderation:' . $itemId . ':' . $decision,
+        (int) $_SESSION['user_id']
+    );
 
     $pdo->commit();
     header('Location: manage-items.php?message=item_' . $decision);

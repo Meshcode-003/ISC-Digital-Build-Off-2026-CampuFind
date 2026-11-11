@@ -92,12 +92,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'rejection_reason' => $decision === 'rejected' ? $reason : null,
                         'application_id' => $applicationId,
                     ]);
-                    mentorshipNotify(
+                    createNotification(
+                        $pdo,
                         $applicantId,
                         $decision === 'approved' ? 'Mentor application approved' : 'Mentor application update',
                         $decision === 'approved'
                             ? 'Your mentor application was approved. Your profile is now available to manage.'
-                            : 'Your mentor application was not approved. Review the feedback in your application page.'
+                            : 'Your mentor application was not approved. Review the feedback in your application page.',
+                        'mentorship',
+                        APP_BASE_PATH . '/mentorship/apply.php',
+                        'mentor-application-decision:' . $applicationId
+                    );
+                    notifySuperAdministrators(
+                        $pdo,
+                        'Mentor application reviewed',
+                        'A mentorship administrator ' . $decision . ' a mentor application.',
+                        APP_BASE_PATH . '/mentorship/admin/applications.php',
+                        'mentor-application-review:' . $applicationId . ':' . $decision,
+                        $mentorshipUserId
                     );
                     $pdo->commit();
                     mentorshipSetFlash('The application has been ' . $decision . '.');

@@ -33,7 +33,6 @@ if (!$isParticipant || !in_array($request['status'], ['accepted', 'completed'], 
     http_response_code(403);
     exit('You cannot access this conversation.');
 }
-
 $conversationStatement = $pdo->prepare(
     'SELECT id FROM mentorship_conversations WHERE mentorship_request_id = :request_id'
 );
@@ -43,6 +42,7 @@ if (!$conversationId) {
     http_response_code(404);
     exit('Conversation not found.');
 }
+touchMentorshipConversationPresence($pdo, (int) $conversationId, $mentorshipUserId);
 
 $messageStatement = $pdo->prepare(
     'SELECT m.id, m.sender_user_id, m.message, m.created_at,
@@ -59,22 +59,22 @@ $messageStatement->bindValue(':after_id', $afterId, PDO::PARAM_INT);
 $messageStatement->execute();
 $messages = $messageStatement->fetchAll();
 
-if ($messages) {
-    $lastMessageId = (int) end($messages)['id'];
-    $readStatement = $pdo->prepare(
-        'UPDATE mentorship_messages
-         SET read_at = CURRENT_TIMESTAMP
-         WHERE conversation_id = :conversation_id
-           AND sender_user_id <> :user_id
-           AND read_at IS NULL
-           AND id <= :last_message_id'
-    );
-    $readStatement->execute([
-        'conversation_id' => (int) $conversationId,
-        'user_id' => $mentorshipUserId,
-        'last_message_id' => $lastMessageId,
-    ]);
-}
+$readStatement = $pdo->prepare(
+    'UPDATE mentorship_messages
+     SET read_at = CURRENT_TIMESTAMP
+     WHERE conversation_id = :conversation_id
+       AND sender_user_id <> :user_id
+       AND read_at IS NULL'
+);
+$readStatement->execute([
+    'conversation_id' => (int) $conversationId,
+    'user_id' => $mentorshipUserId,
+]);
+markNotificationByDedupeKeyAsRead(
+    $pdo,
+    $mentorshipUserId,
+    'mentorship-conversation:' . (int) $conversationId
+);
 
 header('Content-Type: application/json; charset=utf-8');
 echo json_encode(

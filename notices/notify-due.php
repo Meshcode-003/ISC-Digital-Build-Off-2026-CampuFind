@@ -16,7 +16,6 @@ $statement = $pdo->query(
        AND published_at IS NOT NULL
        AND published_at <= CURRENT_TIMESTAMP
        AND (expires_at IS NULL OR expires_at >= CURRENT_TIMESTAMP)
-       AND priority IN ('high', 'urgent')
      ORDER BY id"
 );
 $noticeIds = $statement->fetchAll(PDO::FETCH_COLUMN);
@@ -35,4 +34,4 @@ foreach ($noticeIds as $noticeId) {
     }
 }
 
-echo 'Processed ', count($noticeIds), ' published high/urgent notices.', PHP_EOL;
+echo 'Processed ', count($noticeIds), ' published notices.', PHP_EOL;

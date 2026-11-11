@@ -2,6 +2,7 @@
 declare(strict_types=1);
 // Protect this page: only admins and super admins
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
+require_once dirname(__DIR__, 2) . '/includes/notifications.php';
 
 requireAdmin();
 
@@ -98,6 +99,7 @@ function e($value): string
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Lost & Found Admin Dashboard</title>
+<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/notifications.css">
 
 <style>
 
@@ -373,6 +375,8 @@ th {
 
 </style>
 
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
 
 
@@ -388,6 +392,8 @@ th {
     <div class="logo">
         Lost & Found
     </div>
+
+    <?php renderNotificationBell($pdo, (int) $_SESSION['user_id']); ?>
 
     <h4>Main Menu</h4>
 

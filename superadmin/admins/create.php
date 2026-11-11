@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/config/config.php';
 require_once dirname(__DIR__, 2) . '/includes/auth.php';
 require_once dirname(__DIR__, 2) . '/includes/csrf.php';
+require_once dirname(__DIR__, 2) . '/includes/notifications.php';
 
 requireRole(['super_admin']);
 
@@ -177,6 +178,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     : null,
             ]);
 
+            createNotification(
+                $pdo,
+                $adminUserId,
+                'Administrator account created',
+                'Your CampusFind administrator account is ready. Your assigned modules are available from the dashboard.',
+                'admin',
+                BASE_URL . '/admin-modules.php',
+                'admin-account-created:' . $adminUserId
+            );
+            notifySuperAdministrators(
+                $pdo,
+                'Administrator account created',
+                $description,
+                SUPERADMIN_URL . '/dashboard.php#administrators',
+                'admin-account-created:' . $adminUserId,
+                (int) $_SESSION['user_id']
+            );
+
             $pdo->commit();
             $_SESSION['admin_registration_success'] = 'Administrator account and module assignments created successfully.';
             header('Location: create.php');
@@ -228,9 +247,12 @@ $displayName = trim(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Register administrator | <?= $escape(APP_NAME) ?></title>
-    <link rel="stylesheet" href="superadmin.css">
+    <link rel="stylesheet" href="<?= $escape(SUPERADMIN_URL . '/superadmin.css') ?>">
+    <link rel="stylesheet" href="<?= $escape(SUPERADMIN_URL . '/admins/create.css?v=' . filemtime(__DIR__ . '/create.css')) ?>">
+    <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/campusfind-theme.css">
 </head>
-<body>
+<body class="admin-create-page">
     <header class="superadmin-header">
         <a class="brand" href="<?= $escape(APP_BASE_PATH) ?>/index.html">CampusFind</a>
         <div class="header-actions">
